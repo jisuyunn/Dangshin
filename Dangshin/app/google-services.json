@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "284374368362",
+    "firebase_url": "https://dangshin-fa136.firebaseio.com",
+    "project_id": "dangshin-fa136",
+    "storage_bucket": "dangshin-fa136.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284374368362:android:7701c1905898396d",
+        "android_client_info": {
+          "package_name": "com.example.yelimhan.dangshin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284374368362-aes87qkprlpqr4tiktg30tngg16mm51n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCufDZciYZdiP5RSxn0QLUzor5zkVfPdA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
