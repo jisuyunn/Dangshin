@@ -1,12 +1,13 @@
 package com.example.yelimhan.dangshin;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -26,6 +27,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
 
 
 public class UserActivity extends AppCompatActivity {
@@ -39,6 +41,12 @@ public class UserActivity extends AppCompatActivity {
 
     // 파이어베이스 인증 객체
     private FirebaseAuth mAuth;
+
+    // 유저 데이터베이스 참조 객체
+    private DatabaseReference UserDatabase;
+
+    private String userId;  // 유저의 ID
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -64,11 +72,12 @@ public class UserActivity extends AppCompatActivity {
 
                         mGoogleApiClient.disconnect();
 
-                        Log.e("GoogleLogin", "personName=" + personName);
+                        Log.e("GoogleLogin", "personNa1me=" + personName);
                         Log.e("GoogleLogin", "personEmail=" + personEmail);
                         Log.e("GoogleLogin", "personId=" + personId);
                         Log.e("GoogleLogin", "tokenKey=" + tokenKey);
-                        Toast.makeText(UserActivity.this,"구글로그인성공",Toast.LENGTH_SHORT);
+                        Toast.makeText(UserActivity.this,"구글로그인성공",Toast.LENGTH_LONG).show();
+
 
                     } else {
                         // 로그인 실패 했을때
@@ -89,6 +98,7 @@ public class UserActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            Toast.makeText(UserActivity.this, "로그인 성공", Toast.LENGTH_LONG).show();
                             // 로그인 성공
                             FirebaseUser user = mAuth.getCurrentUser();
                             // updateUI(user);
@@ -104,14 +114,21 @@ public class UserActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // 활동을 초기화할 때 사용자가 현재 로그인되어 있는지 확인합니다.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        //  updateUI(currentUser);
+        //FirebaseUser currentUser = mAuth.getCurrentUser();
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_intro);
+        setContentView(R.layout.activity_user);
+
+        TextView tv  = findViewById(R.id.tv1);
+
+        Intent intent = getIntent();
+        int test = -1;
+        test = intent.getIntExtra("TEST", 0);
+        Toast.makeText(UserActivity.this, String.valueOf(test)+"가입시작!", Toast.LENGTH_SHORT).show();
 
         // 파이어베이스 인증 객체 선언
         mAuth = FirebaseAuth.getInstance();
@@ -153,4 +170,15 @@ public class UserActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    private boolean isSignIn(){
+
+
+        return true;
+    }
+
+    private Boolean saveUserToDatabase(String id){
+
+
+        return true;
+     }
 }

@@ -36,12 +36,15 @@ public class IntroActivity extends AppCompatActivity {
 
     private Uri filePath;
 
+    public String test1="";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+
+
 
         btChoose = (Button) findViewById(R.id.bt_choose);
         btUpload = (Button) findViewById(R.id.bt_upload);
