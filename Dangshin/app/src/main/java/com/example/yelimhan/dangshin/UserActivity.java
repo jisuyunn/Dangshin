@@ -48,75 +48,7 @@ public class UserActivity extends AppCompatActivity {
     private String userId;  // 유저의 ID
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // 구글로그인 버튼 응답
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                if (result != null) {
-                    if (result.isSuccess()) {
 
-                        // 로그인 성공 했을때
-                        GoogleSignInAccount acct = result.getSignInAccount();
-
-                        String personName = acct.getDisplayName();
-                        String personEmail = acct.getEmail();
-                        String personId = acct.getId();
-                        String tokenKey = acct.getServerAuthCode();
-
-                        mGoogleApiClient.disconnect();
-
-                        Log.e("GoogleLogin", "personNa1me=" + personName);
-                        Log.e("GoogleLogin", "personEmail=" + personEmail);
-                        Log.e("GoogleLogin", "personId=" + personId);
-                        Log.e("GoogleLogin", "tokenKey=" + tokenKey);
-                        Toast.makeText(UserActivity.this,"구글로그인성공",Toast.LENGTH_LONG).show();
-
-
-                    } else {
-                        // 로그인 실패 했을때
-                        Log.e("GoogleLogin", "login fail cause=" + result.getStatus().getStatusMessage());
-                    }
-                }
-            } catch (ApiException e) {
-                // 구글 로그인 실패
-            }
-        }
-    }
-    // 사용자가 정상적으로 로그인한 후에 GoogleSignInAccount 개체에서 ID 토큰을 가져와서
-    // Firebase 사용자 인증 정보로 교환하고 Firebase 사용자 인증 정보를 사용해 Firebase에 인증합니다.
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(UserActivity.this, "로그인 성공", Toast.LENGTH_LONG).show();
-                            // 로그인 성공
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            // updateUI(user);
-                        } else {
-                            // 로그인 실패
-                            // updateUI(null);
-                        }
-                    }
-                });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // 활동을 초기화할 때 사용자가 현재 로그인되어 있는지 확인합니다.
-        //FirebaseUser currentUser = mAuth.getCurrentUser();
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,21 +96,81 @@ public class UserActivity extends AppCompatActivity {
         });
 
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // 구글로그인 버튼 응답
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+                GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                if (result != null) {
+                    if (result.isSuccess()) {
 
+                        // 로그인 성공 했을때
+                        GoogleSignInAccount acct = result.getSignInAccount();
+
+                        String personName = acct.getDisplayName();
+                        String personEmail = acct.getEmail();
+                        String personId = acct.getId();
+                        String tokenKey = acct.getServerAuthCode();
+                        mGoogleApiClient.disconnect();
+
+                        Log.e("GoogleLogin", "personNa1me=" + personName);
+                        Log.e("GoogleLogin", "personEmail=" + personEmail);
+                        Log.e("GoogleLogin", "personId=" + personId);
+                        Log.e("GoogleLogin", "tokenKey=" + tokenKey);
+                        Toast.makeText(UserActivity.this,"구글로그인성공",Toast.LENGTH_LONG).show();
+
+                    } else {
+                        // 로그인 실패 했을때
+                        Log.e("GoogleLogin", "login fail cause=" + result.getStatus().getStatusMessage());
+                    }
+                }
+            } catch (ApiException e) {
+                // 구글 로그인 실패
+            }
+        }
+    }
+    // 사용자가 정상적으로 로그인한 후에 GoogleSignInAccount 개체에서 ID 토큰을 가져와서
+    // Firebase 사용자 인증 정보로 교환하고 Firebase 사용자 인증 정보를 사용해 Firebase에 인증합니다.
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(UserActivity.this, "로그인 성공", Toast.LENGTH_LONG).show();
+                            // 로그인 성공
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            Intent intent = new Intent(UserActivity.this,SignInActivity.class);
+                            intent.putExtra("ID",user.getEmail());
+                            startActivity(intent);
+
+
+                        } else {
+                            // 로그인 실패
+                            // updateUI(null);
+                        }
+                    }
+                });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 활동을 초기화할 때 사용자가 현재 로그인되어 있는지 확인합니다.
+        //FirebaseUser currentUser = mAuth.getCurrentUser();
+
+    }
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    private boolean isSignIn(){
-
-
-        return true;
-    }
-
-    private Boolean saveUserToDatabase(String id){
-
-
-        return true;
-     }
 }

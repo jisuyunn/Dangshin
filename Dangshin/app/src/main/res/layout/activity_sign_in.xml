@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="#ffffee"
+    android:orientation="vertical"
+    tools:context=".SignInActivity">
+
+
+    <Button
+        android:id="@+id/btnBlind"
+        android:layout_width="200dp"
+        android:layout_height="99dp"
+        android:layout_gravity="center"
+        android:background="#232333"
+        android:text="시각장애인"
+        android:textSize="25dp"
+        android:layout_margin="20sp"
+        android:textColor="#eeeeee" />
+    <Button
+        android:id="@+id/btnVolunteer"
+        android:layout_width="200dp"
+        android:layout_height="99dp"
+        android:layout_gravity="center"
+        android:background="#353555"
+        android:text="봉사자"
+        android:textSize="25dp"
+        android:textColor="#eeeeee" />
+</LinearLayout>

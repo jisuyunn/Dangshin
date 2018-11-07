@@ -38,31 +38,20 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         mAuth = FirebaseAuth.getInstance();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder
-
                 (GoogleSignInOptions.DEFAULT_SIGN_IN)
-
                 .requestIdToken(getString(R.string.default_web_client_id))
-
                 .requestEmail()
-
                 .build();
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-
                 .enableAutoManage(this, this )
-
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-
                 .build();
         bt = (Button) findViewById(R.id.logout);
-
         Intent intent = getIntent();
         String id = intent.getStringExtra("TEST");
         Toast.makeText(this,id+"님이 로그인하셨습니다!", Toast.LENGTH_LONG).show();
 
-
         // 로그아웃 버튼 클릭 이벤트 > dialog 예/아니오
-
         Button logout_btn_google = (Button) findViewById(R.id.logout);
 
         logout_btn_google.setOnClickListener(new View.OnClickListener() {
