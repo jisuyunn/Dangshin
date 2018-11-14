@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
     tools:context=".UserActivity">
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
     <TextView
+        android:layout_marginTop="150dp"
         android:id="@+id/tv1"
-        android:textSize="20dp"
+        android:textSize="40dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="상태"
+        android:text="당신의 눈"
         android:textAlignment="center"
         android:textColor="#000000"/>
 
-</android.support.constraint.ConstraintLayout>
+    <com.google.android.gms.common.SignInButton
+        android:layout_width="178dp"
+        android:id="@+id/sign_in_button"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="120dp" />
+
+
+</RelativeLayout>

@@ -5,19 +5,24 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class SignInActivity extends AppCompatActivity implements View.OnClickListener{
+public class SignInActivity extends AppCompatActivity{
 
     Button btnBlind;
     Button btnVol;
 
-    String pos = "";
+    String u_id="";
 
     DatabaseReference mDatabase;
     DatabaseReference rDatabase;
+    FirebaseDatabase db;
+    DatabaseReference table;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,34 +32,45 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         btnVol = (Button)findViewById(R.id.btnVolunteer);
 
 
+
+
         Intent intent = getIntent();
-        String u_id = intent.getStringExtra("ID");
+        u_id = intent.getStringExtra("ID");
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
-        rDatabase = mDatabase.child("");
-    }
+        db = FirebaseDatabase.getInstance();
+        table = db.getReference("UserInfo");
 
 
-    @Override
-    public void onClick(View v) {
+        //mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
+        //rDatabase = mDatabase.child("");
 
-        switch (v.getId()){
-
-            case R.id.btnBlind:
-                saveUserToDatabase("Blind");
-                break;
-
-            case R.id.btnVolunteer:
+        btnVol.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(SignInActivity.this,"blind click",Toast.LENGTH_SHORT).show();
                 saveUserToDatabase("Volunteer");
-                break;
-        }
+            }
+        });
+
+        btnBlind.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(SignInActivity.this,"vol click",Toast.LENGTH_SHORT).show();
+                saveUserToDatabase("Blind");
+            }
+        });
+
     }
+
+
+
 
     private Boolean saveUserToDatabase(String pos){
 
-
-        UserInfo uif = new UserInfo("id",pos,1);
-        mDatabase.child("UserInfo").child("00002").setValue(uif);
+        UserInfo uif = new UserInfo(u_id,pos,true);
+        DatabaseReference newUser = table.push();
+        newUser.setValue(uif);
+        finish();
         return true;
     }
 
