@@ -67,7 +67,8 @@ public class SignInActivity extends AppCompatActivity{
 
     private Boolean saveUserToDatabase(String pos){
 
-        UserInfo uif = new UserInfo(u_id,pos,true);
+        // 파이어베이스에 데이터 넣는 부분(랜덤 키로 push)
+        UserInfo uif = new UserInfo(u_id,pos,true, 0);
         DatabaseReference newUser = table.push();
         newUser.setValue(uif);
         finish();

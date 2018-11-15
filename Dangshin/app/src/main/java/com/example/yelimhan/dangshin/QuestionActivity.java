@@ -34,7 +34,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         setContentView(R.layout.activity_question);
 
 
-        Toast.makeText(this, "Blind - 질문하기 (QuestionActivity",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "  Blind - 질문하기 (QuestionActivity",Toast.LENGTH_SHORT).show();
 
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder
