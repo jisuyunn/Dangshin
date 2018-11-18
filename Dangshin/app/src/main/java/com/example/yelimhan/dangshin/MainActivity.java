@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     String userId = "";
-    UserInfo ui = null;
 
     @Override
     protected void onResume() {
@@ -31,11 +30,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        // firebase database 참조 객체
         DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
-
 
 
         // 현재 접속중인 사용자 있음 -> 다음 동작으로
@@ -86,12 +85,18 @@ public class MainActivity extends AppCompatActivity {
             });
 
 
-
-            // 현재 접속중인 사용자 없음 -> 로그인(가입)
+        // 현재 접속중인 사용자 없음 -> 로그인(가입)
         } else {
             Intent intent = new Intent(MainActivity.this, UserActivity.class);
             intent.putExtra("TEST",11);
             startActivity(intent);
+           // MainActivity.this.finish();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
     }
 }

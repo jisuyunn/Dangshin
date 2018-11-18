@@ -71,6 +71,8 @@ public class SignInActivity extends AppCompatActivity{
         UserInfo uif = new UserInfo(u_id,pos,true, 0);
         DatabaseReference newUser = table.push();
         newUser.setValue(uif);
+        Intent intent = new Intent(SignInActivity.this,MainActivity.class);
+        startActivity(intent);
         finish();
         return true;
     }

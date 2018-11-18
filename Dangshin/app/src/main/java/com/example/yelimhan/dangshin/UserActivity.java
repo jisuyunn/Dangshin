@@ -65,8 +65,6 @@ public class UserActivity extends AppCompatActivity {
         // 파이어베이스 인증 객체 선언
         mAuth = FirebaseAuth.getInstance();
 
-        // Google 로그인을 앱에 통합
-        // GoogleSignInOptions 개체를 구성할 때 requestIdToken을 호출
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -132,6 +130,7 @@ public class UserActivity extends AppCompatActivity {
                 }
             } catch (ApiException e) {
                 // 구글 로그인 실패
+                Log.e("GoogleLogin", "fail cause=" + e.toString());
             }
         }
     }
@@ -151,11 +150,12 @@ public class UserActivity extends AppCompatActivity {
                             Intent intent = new Intent(UserActivity.this,SignInActivity.class);
                             intent.putExtra("ID",user.getEmail());
                             startActivity(intent);
-
+                            UserActivity.this.finish();
 
                         } else {
                             // 로그인 실패
                             // updateUI(null);
+                            Log.e("GoogleLogin", "firebase login fail cause=");
                         }
                     }
                 });
