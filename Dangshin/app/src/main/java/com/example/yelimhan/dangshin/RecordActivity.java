@@ -30,7 +30,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +54,7 @@ public class RecordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_record);
 
         mRecorder = new MediaRecorder();
+
         mBtRecord = (Button)findViewById(R.id.bt_record);
         mBtPlay = (Button)findViewById(R.id.bt_play);
         mBtUpload = (Button)findViewById(R.id.bt_upload);
@@ -62,6 +62,12 @@ public class RecordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(isRecording == false){
+                    if (ActivityCompat.checkSelfPermission(RecordActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+                        ActivityCompat.requestPermissions(RecordActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                RECORD_AUDIO);
+
+                    }
                     initAudioRecorder();
                     mRecorder.start();
 
@@ -128,15 +134,16 @@ public class RecordActivity extends AppCompatActivity {
             //Unique한 파일명을 만들자.
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
             Date now = new Date();
-            String filename = formatter.format(now) + ".aac";
+            String filename = formatter.format(now) + ".mp4";
             //storage 주소와 폴더 파일명을 지정해 준다.
             StorageMetadata metadata = new StorageMetadata.Builder()
-                    .setContentType("audio/mpeg")
+                    .setContentType("audio/mp4")
                     .build();
 
+            Uri uri = Uri.fromFile(new File(mPath));
             StorageReference storageRef = storage.getReferenceFromUrl("gs://dangshin-fa136.appspot.com").child("voice/" + filename);
             //올라가거라...
-            storageRef.putFile(Uri.parse(mPath), metadata)
+            storageRef.putFile(uri, metadata)
                     //성공시
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -170,35 +177,20 @@ public class RecordActivity extends AppCompatActivity {
     }
 
     void initAudioRecorder(){
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
-                    RECORD_AUDIO);
-        }
 
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
-        // mPath = "/sdcard/Android/data/com.example.yelimhan.dangshin/"+"test.aac";
+        mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.mp4";
 
-        mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.aac";
-        Log.d("file name : ", mPath);
-
-        // File file = new File(mPath);
-
-//        Uri uri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName()+".fileprovider", file);
-//        RecordActivity.this.grantUriPermission("com.example.yelimhan.dangshin", uri,
-//                Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
+        Log.d("file path : ", mPath);
         mRecorder.setOutputFile(mPath);
-        try{
+        try {
             mRecorder.prepare();
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
 }
