@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -17,7 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class QuestionListFragment extends Fragment {
+public class QuestionDoneListFragment extends Fragment {
 
 
     private Context context;
@@ -69,18 +70,18 @@ public class QuestionListFragment extends Fragment {
 
     public void getFirebaseData() {
         mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-        mDatabase.limitToLast(10).orderByChild("q_dataTime").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.orderByChild("q_dataTime").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 imagePath.clear();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
-                    if(!questionInfo.checkAnswer)
+                    if(questionInfo.checkAnswer)
                         imagePath.add(questionInfo);
                 }
                 Collections.reverse(imagePath);
                 // 그리드 뷰 사용
-                gridImageAdapter = new QuestionListImageAdapter(context, imagePath, false);
+                gridImageAdapter = new QuestionListImageAdapter(context, imagePath, true);
                 gridView.setAdapter(gridImageAdapter);
                 // 스크롤 맨 아래 닿았을 때
                /* gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -102,7 +103,5 @@ public class QuestionListFragment extends Fragment {
 
             }
         });
-
     }
-
 }

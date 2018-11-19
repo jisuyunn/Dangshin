@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -28,6 +29,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
     public Button bt;
+
+    float curpos;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,5 +118,22 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.v("알림", "onConnectionFailed");
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                curpos = event.getY();
+                break;
+            case MotionEvent.ACTION_UP: {
+                float diff = event.getY() - curpos;
+                if(diff < -300) {       // 위로 스와이프 해서 질문하기
+                    Toast.makeText(getApplicationContext(), "swipe", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+        }
+        return super.onTouchEvent(event);
     }
 }

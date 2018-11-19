@@ -123,7 +123,7 @@ public class QuestionListImageAdapter extends BaseAdapter {
                 imageView1.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(mContext,AnswerDoneActivity.class);
+                        Intent intent = new Intent(mContext,ListenActivity.class);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("question",questionInfos.get(position));
                         intent.putExtras(bundle);

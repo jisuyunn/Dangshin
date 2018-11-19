@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         // firebase database 참조 객체
-        DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
+        final DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
 
 
         // 현재 접속중인 사용자 있음 -> 다음 동작으로
@@ -62,16 +62,49 @@ public class MainActivity extends AppCompatActivity {
                                 it.putExtra("USERID",userId);
                                 startActivity(it);
                             }
-                            else if (ui.u_haveQuestion == 1){       // 시각장애인의 질문이 있는데 답변 없는 경우 -> ReQuesion?
-                                Intent it = new Intent(MainActivity.this,QuestionListActivity.class);
-                                it.putExtra("USERID",userId);
-                                startActivity(it);
+                            else if (ui.u_haveQuestion == 1)        // 시각장애인의 질문이 있는데 답변 없는 경우 -> ReQuesion?
+                            {
+                                FirebaseDatabase.getInstance().getReference("QuestionInfo")
+                                        .orderByChild("q_writer").equalTo(userId)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                    QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
+                                                    Intent it = new Intent(MainActivity.this,QuestionAgainActivity.class);
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putSerializable("question",questionInfo);
+                                                    it.putExtras(bundle);
+                                                    startActivity(it);
+                                                }
+                                            }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
                             }
                             else if(ui.u_haveQuestion == 2)         // 시각장애인의 질문이 있고 답변이 달린 경우 -> ListenActivity
                             {
-                                Intent it = new Intent(MainActivity.this,ListenActivity.class);
-                                it.putExtra("USERID",userId);
-                                startActivity(it);
+                                FirebaseDatabase.getInstance().getReference("QuestionInfo")
+                                        .orderByChild("q_writer").equalTo(userId)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
+                                            Intent it = new Intent(MainActivity.this,ListenActivity.class);
+                                            Bundle bundle = new Bundle();
+                                            bundle.putSerializable("question",questionInfo);
+                                            it.putExtras(bundle);
+                                            startActivity(it);
+                                        }
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
                         }
                     }

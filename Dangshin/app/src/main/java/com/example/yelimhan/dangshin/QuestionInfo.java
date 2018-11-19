@@ -12,15 +12,17 @@ public class QuestionInfo implements Serializable {
     public String q_id;
     public String q_pic;
     public String q_writer;
+    public String q_voice;
     public boolean checkAnswer;
     public boolean checkUrgent;
 
     QuestionInfo() {
 
     }
-    public QuestionInfo(String id, String pic, String writer, boolean urgent) {
+    public QuestionInfo(String id, String pic, String voice, String writer, boolean urgent) {
         q_id = id;
         q_pic = pic;
+        q_voice = voice;
         q_writer = writer;
         checkUrgent = urgent;
         checkAnswer = false;
