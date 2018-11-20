@@ -35,7 +35,6 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
     public QuestionListAdapter adapter;
-    public Button bt;
     public String userID;
     public boolean firstTime = true;
     public ViewPager viewPager;
@@ -53,8 +52,6 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
         setContentView(R.layout.activity_question_list);
 
         Log.d("testt", " Q L A onCreate");
-
-        bt = (Button) findViewById(R.id.logout);
 
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder

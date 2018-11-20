@@ -29,8 +29,12 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,16 +50,17 @@ public class AnswerActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private boolean isPlaying = false;
     private boolean isPrepared = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_answer);
         Intent intent = getIntent();
-        questionInfo = (QuestionInfo)intent.getSerializableExtra("question");
+        questionInfo = (QuestionInfo) intent.getSerializableExtra("question");
         imageView = findViewById(R.id.answerimage);
         GlideApp.with(this)
                 .load(storageReference.child(questionInfo.q_pic))
-                .override(500,300)
+                .override(500, 300)
                 .into(imageView);
         questionText = findViewById(R.id.questiontext);
 
@@ -81,7 +86,7 @@ public class AnswerActivity extends AppCompatActivity {
         playbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isPrepared) {
+                if (isPrepared) {
                     if (isPlaying) {
                         mediaPlayer.pause();
                         isPlaying = false;
@@ -117,21 +122,89 @@ public class AnswerActivity extends AppCompatActivity {
         findViewById(R.id.checkbutton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!editText.getText().toString().equals("")) {
+                if (!editText.getText().toString().equals("")) {
                     mDatabase = FirebaseDatabase.getInstance().getReference("AnswerInfo");
                     String newAnswer = mDatabase.push().getKey();
-                    AnswerInfo answerInfo = new AnswerInfo(newAnswer,questionInfo.q_id,"a",editText.getText().toString());
+                    AnswerInfo answerInfo = new AnswerInfo(newAnswer, questionInfo.q_id, "a", editText.getText().toString());
                     mDatabase.child(newAnswer).setValue(answerInfo);
                     mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
                     mDatabase.child(questionInfo.q_id).child("checkAnswer").setValue(true);
                     //startActivity(new Intent(AnswerActivity.this,QuestionListActivity.class));
-
-                    AnswerActivity.this.finish();
+                    sendPushAlert(questionInfo.q_id);
                 }
             }
         });
     }
 
+    public void sendPushAlert(String answerkey) {
+        final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
+        final String SERVER_KEY = "AAAAQjYIgGo:APA91bFDx0BUk2pa77EAAmeAIak73owBnfZbZitHV3G3e7_4_wCSpkv2yqCga0fk03jJ8eTvyxmNv0Oqze0FuzwFDYm9vE_zSrBiLt-tw5RTDX6W6I79pGnU91rTdddbcwaU5qOgIEA-";
+        FirebaseDatabase.getInstance().getReference("QuestionInfo").child(answerkey)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    QuestionInfo questionInfo = dataSnapshot.getValue(QuestionInfo.class);
+                    String writer = questionInfo.q_writer;
+                    FirebaseDatabase.getInstance().getReference("UserInfo")
+                            .orderByChild("u_googleId").equalTo(writer)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                        UserInfo userInfo = snapshot.getValue(UserInfo.class);
+                                        final String usertoken = userInfo.u_token;
+                                        new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    // FMC 메시지 생성 start
+                                                    JSONObject root = new JSONObject();
+                                                    JSONObject notification = new JSONObject();
+                                                    notification.put("body", "눌러서 알림을 확인하세요!");
+                                                    notification.put("title", getString(R.string.app_name));
+                                                    root.put("notification", notification);
+                                                    root.put("to", usertoken);
+                                                    // FMC 메시지 생성 end
+
+                                                    URL Url = new URL(FCM_MESSAGE_URL);
+                                                    HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                                                    conn.setRequestMethod("POST");
+                                                    conn.setDoOutput(true);
+                                                    conn.setDoInput(true);
+                                                    conn.addRequestProperty("Authorization", "key=" + SERVER_KEY);
+                                                    conn.setRequestProperty("Accept", "application/json");
+                                                    conn.setRequestProperty("Content-type", "application/json");
+                                                    OutputStream os = conn.getOutputStream();
+                                                    os.write(root.toString().getBytes("utf-8"));
+                                                    os.flush();
+                                                    conn.getResponseCode();
+                                                    AnswerActivity.this.finish();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }).start();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+    }
     public void stt() {
         Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());

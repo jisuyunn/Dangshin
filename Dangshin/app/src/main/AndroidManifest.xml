@@ -29,6 +29,19 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
+        <service
+            android:name=".PushMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".FirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
         <activity android:name=".IntroActivity"></activity>
         <activity android:name=".QuestionActivity" />
         <activity android:name=".QuestionAgainActivity" />

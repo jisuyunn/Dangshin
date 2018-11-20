@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class SignInActivity extends AppCompatActivity{
 
@@ -85,7 +86,7 @@ public class SignInActivity extends AppCompatActivity{
     private Boolean saveUserToDatabase(String pos){
 
         // 파이어베이스에 데이터 넣는 부분(랜덤 키로 push)
-        UserInfo uif = new UserInfo(userID,pos,true, 0);
+        UserInfo uif = new UserInfo(userID,pos,true, 0, FirebaseInstanceId.getInstance().getToken());
         DatabaseReference newUser = table.push();
         newUser.setValue(uif);
         Intent intent = new Intent(SignInActivity.this,MainActivity.class);
