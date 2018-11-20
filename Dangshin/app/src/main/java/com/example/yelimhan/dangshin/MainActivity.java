@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             userId = user.getEmail();
 
             Query query = table.orderByChild("u_googleId").equalTo(userId);
-            query.addValueEventListener(new ValueEventListener() {
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
