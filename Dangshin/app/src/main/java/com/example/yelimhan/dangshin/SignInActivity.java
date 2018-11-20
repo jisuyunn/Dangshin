@@ -2,23 +2,27 @@ package com.example.yelimhan.dangshin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignInActivity extends AppCompatActivity{
 
     Button btnBlind;
     Button btnVol;
-
-    String u_id="";
-
-    DatabaseReference mDatabase;
-    DatabaseReference rDatabase;
+    String userID="";
     FirebaseDatabase db;
     DatabaseReference table;
 
@@ -31,18 +35,31 @@ public class SignInActivity extends AppCompatActivity{
         btnBlind = (Button)findViewById(R.id.btnBlind);
         btnVol = (Button)findViewById(R.id.btnVolunteer);
 
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        userID = user.getEmail();
 
-
-
-        Intent intent = getIntent();
-        u_id = intent.getStringExtra("ID");
 
         db = FirebaseDatabase.getInstance();
         table = db.getReference("UserInfo");
 
+        // 이미 가입한 유저가 새로 로그인한 경우
+        Query query = table.orderByChild("u_googleId").equalTo(userID);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot child : dataSnapshot.getChildren()){
+                    Log.d("testt ","g id already signed in");
+                    Intent intent = new Intent(SignInActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
 
-        //mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
-        //rDatabase = mDatabase.child("");
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         btnVol.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +85,7 @@ public class SignInActivity extends AppCompatActivity{
     private Boolean saveUserToDatabase(String pos){
 
         // 파이어베이스에 데이터 넣는 부분(랜덤 키로 push)
-        UserInfo uif = new UserInfo(u_id,pos,true, 0);
+        UserInfo uif = new UserInfo(userID,pos,true, 0);
         DatabaseReference newUser = table.push();
         newUser.setValue(uif);
         Intent intent = new Intent(SignInActivity.this,MainActivity.class);

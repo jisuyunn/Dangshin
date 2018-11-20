@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -100,7 +99,8 @@ public class QuestionListImageAdapter extends BaseAdapter {
             if(!doneFlag && !questionInfos.get(position).checkAnswer) {
                 GlideApp.with(mContext)
                         .load(storageReference.child(questionInfos.get(position).q_pic))
-                        .override(500,300)
+                        .centerCrop()
+                        .override(300,300)
                         .into(imageView1);
                 imageView1.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -118,7 +118,8 @@ public class QuestionListImageAdapter extends BaseAdapter {
             if(doneFlag && questionInfos.get(position).checkAnswer) {
                 GlideApp.with(mContext)
                         .load(storageReference.child(questionInfos.get(position).q_pic))
-                        .override(500,300)
+                        .centerCrop()
+                        .override(300,300)
                         .into(imageView1);
                 imageView1.setOnClickListener(new View.OnClickListener() {
                     @Override

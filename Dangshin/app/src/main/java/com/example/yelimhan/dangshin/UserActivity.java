@@ -57,11 +57,6 @@ public class UserActivity extends AppCompatActivity {
 
         TextView tv  = findViewById(R.id.tv1);
 
-        Intent intent = getIntent();
-        int test = -1;
-        test = intent.getIntExtra("TEST", 0);
-        Toast.makeText(UserActivity.this, String.valueOf(test)+"가입시작!", Toast.LENGTH_SHORT).show();
-
         // 파이어베이스 인증 객체 선언
         mAuth = FirebaseAuth.getInstance();
 

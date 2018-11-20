@@ -10,13 +10,12 @@
         android:orientation="vertical"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <android.support.v4.view.ViewPager
-            android:layout_height="400dp"
-            android:layout_width="match_parent"
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/pager"
-            tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity"
-            xmlns:tools="http://schemas.android.com/tools">
+            android:layout_width="match_parent"
+            android:layout_height="430dp"
+            tools:context="net.voidynullness.android.tabitytabs.TabLayoutActivity">
         </android.support.v4.view.ViewPager>
 
         <android.support.design.widget.TabLayout

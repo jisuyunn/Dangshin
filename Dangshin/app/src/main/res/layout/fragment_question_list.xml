@@ -7,12 +7,13 @@
         android:layout_height="match_parent">
 
         <GridView
+            android:background="#c6d4ee"
             android:scrollbars="none"
             android:id="@+id/gridView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="15dp"
-            android:columnWidth="100dp"
+            android:columnWidth="60dp"
             android:gravity="center"
             android:horizontalSpacing="10dp"
             android:numColumns="2"

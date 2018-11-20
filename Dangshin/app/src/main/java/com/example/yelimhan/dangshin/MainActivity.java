@@ -19,17 +19,39 @@ public class MainActivity extends AppCompatActivity {
 
 
     String userId = "";
+    public boolean flag = true;
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("testt  ", "MA onResume");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("testt  ", "MA onStart");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        flag = false;
+        Log.d("testt  ", "MA onStop  :  "+String.valueOf(flag));
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("testt  ", "MA onRestart");
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Log.d("testt  ", "MA onCreate");
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -50,12 +72,31 @@ public class MainActivity extends AppCompatActivity {
                         UserInfo ui = snapshot.getValue(UserInfo.class);
 
                         if(ui.u_position.equals("Volunteer")){      // 접속한 사용자가 봉사자일 경우
+                            DatabaseReference updateReference;
+                            updateReference = FirebaseDatabase.getInstance().getReference("UserInfo");
+                            Query query = updateReference.orderByChild("u_googleId").equalTo(userId);
+                            if(flag){
+                                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for(DataSnapshot child : dataSnapshot.getChildren()){
+                                            child.getRef().child("u_online").setValue(true);
+                                            // Toast.makeText(MainActivity.this,"Volunteer 접속 시작", Toast.LENGTH_SHORT).show();
+                                            Log.d("testt  ", "MA ondatachanged : " + String.valueOf(flag));
+
+                                        }
+                                    }                @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    }
+                                });
+                            }
+
+
                             Intent it = new Intent(MainActivity.this,QuestionListActivity.class);
-                            it.putExtra("USERID",userId);
                             startActivity(it);
+                            finish();
                         }
                         else if(ui.u_position.equals("Blind")){     // 접속한 사용자가 시각장애인일 경우
-
 
                             if(ui.u_haveQuestion == 0){             // 시각장애인의 질문이 없는 경우 -> QuestionActivity로
                                 Intent it = new Intent(MainActivity.this,QuestionActivity.class);
@@ -110,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     Log.w("loadPost:onCancelled", databaseError.toException());
@@ -121,15 +163,14 @@ public class MainActivity extends AppCompatActivity {
         // 현재 접속중인 사용자 없음 -> 로그인(가입)
         } else {
             Intent intent = new Intent(MainActivity.this, UserActivity.class);
-            intent.putExtra("TEST",11);
             startActivity(intent);
-           // MainActivity.this.finish();
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        finish();
+        Log.d("testt  ", "MA onPause");
+
     }
 }

@@ -11,13 +11,14 @@
     <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
         tools:ignore="ProtectedPermissions" />
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.Design.Light.NoActionBar">
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.yelimhan.dangshin.fileprovider"
@@ -44,9 +45,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".SignInActivity" />
-        <activity android:name=".QuestionListActivity">
-
-        </activity>
+        <activity android:name=".QuestionListActivity"></activity>
         <activity android:name=".RecordActivity">
 
         </activity>
