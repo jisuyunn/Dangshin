@@ -4,37 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#c6d4ee"
+    android:background="#F0EEF0"
     tools:context=".QuestionListActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:id="@+id/button_home"
-                android:layout_margin="5dp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_home_black_24dp"/>
-            <ImageView
-                android:id="@+id/button_refresh"
-                android:layout_margin="5dp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_autorenew_black_24dp" />
-            <Button
-                android:id="@+id/logout"
-                android:text="logout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
         <include android:layout_height="match_parent"
             android:layout_width="match_parent"
-            layout="@layout/view_question_tab"/>
+            layout="@layout/view_nav_bar"/>
+
+
+
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

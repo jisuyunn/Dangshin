@@ -8,9 +8,11 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -47,6 +49,9 @@ public class ListenActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private boolean isPlaying = false;
     private boolean isPrepared = false;
+    private String text;
+    private float curpos;
+    private String utteranceId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +126,11 @@ public class ListenActivity extends AppCompatActivity {
                 mediaPlayer.stop();
                 isPlaying = false;
                 playbutton.setText("재생");
+                try {
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -143,23 +153,10 @@ public class ListenActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String text = snapshot.child("answer").getValue().toString();
+                    text = snapshot.child("answer").getValue().toString();
                     answerText.setText(text);
                     if (u_position.equals("Blind")) {    // 시각 장애인 이라면
-                        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-                            @Override
-                            public void onInit(int i) {
-                                if (i != TextToSpeech.ERROR) {
-                                    tts.setLanguage(Locale.KOREA);
-                                }
-                            }
-                        });
-                        // tts 한번만 읽어줌
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            ttsGreater21(text);
-                        } else {
-                            ttsUnder20(text);
-                        }
+                        texttospeechs();
                     }
                 }
             }
@@ -169,6 +166,43 @@ public class ListenActivity extends AppCompatActivity {
         });
     }
 
+    public void texttospeechs() {
+        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+                if (i != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.KOREA);
+                    // tts 한번만 읽어줌
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        ttsGreater21(text);
+                    } else {
+                        ttsUnder20(text);
+                    }
+                }
+                if(i == TextToSpeech.SUCCESS) {
+                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
+
+                        }
+
+                        @Override
+                        public void onDone(String Id) {
+                            if(Id.equals(utteranceId)) {
+                                ttsGreater21("다시 들으시려면 화면을 위로 밀어주세요!");
+                                utteranceId = "";
+                            }
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+
+                        }
+                    });
+                }
+            }
+        });
+    }
     @SuppressWarnings("deprecation")
     private void ttsUnder20(String text) {
         HashMap<String, String> map = new HashMap<>();
@@ -178,19 +212,48 @@ public class ListenActivity extends AppCompatActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void ttsGreater21(String text) {
-        String utteranceId=this.hashCode() + "";
-        tts.setPitch(2.0f);
-        tts.setSpeechRate(0.8f);
+        utteranceId=this.hashCode() + "";
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
     }
 
     @Override
+    public void onStop() {
+        if (tts != null) {
+            tts.stop();
+        }
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
-        super.onDestroy();
         if(tts!=null) {
             tts.stop();
             tts.shutdown();
             tts = null;
         }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                curpos = event.getY();
+                break;
+            case MotionEvent.ACTION_UP: {
+                float diff = event.getY() - curpos;
+                if(diff < -300) {
+                    texttospeechs();
+                }
+                break;
+            }
+        }
+        return super.onTouchEvent(event);
     }
 }

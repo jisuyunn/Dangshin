@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                                 Intent it = new Intent(MainActivity.this,QuestionActivity.class);
                                 it.putExtra("USERID",userId);
                                 startActivity(it);
+                                finish();
                             }
                             else if (ui.u_haveQuestion == 1)        // 시각장애인의 질문이 있는데 답변 없는 경우 -> ReQuesion?
                             {
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
                                                     bundle.putSerializable("question",questionInfo);
                                                     it.putExtras(bundle);
                                                     startActivity(it);
+                                                    finish();
                                                 }
                                             }
                                             @Override
@@ -140,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                                             bundle.putSerializable("question",questionInfo);
                                             it.putExtras(bundle);
                                             startActivity(it);
+                                            finish();
                                         }
                                     }
                                     @Override

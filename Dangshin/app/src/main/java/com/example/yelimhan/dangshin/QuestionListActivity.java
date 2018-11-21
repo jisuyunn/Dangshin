@@ -1,19 +1,28 @@
 package com.example.yelimhan.dangshin;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.drm.DrmStore;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -30,21 +39,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-public class QuestionListActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+public class QuestionListActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,NavigationView.OnNavigationItemSelectedListener{
 
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
     public QuestionListAdapter adapter;
     public String userID;
     public boolean firstTime = true;
-    public ViewPager viewPager;
     public QuestionListFragment qlFragment;
     public QuestionDoneListFragment qdlFragment;
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
     public String userIndexId;
     boolean flag = true;
-
+    public DrawerLayout drawerLayout;
+    public NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,13 +81,50 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
             Toast.makeText(this, "로그인 정보가 없습니다!", Toast.LENGTH_SHORT).show();
 
         getUserIndexId();
-        // 로그아웃 버튼 클릭 이벤트 > dialog 예/아니오
-        Button logout_btn_google = (Button) findViewById(R.id.logout);
-        logout_btn_google.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
+
+        //Toast.makeText(this, "봉사자 - 질문 선택",Toast.LENGTH_SHORT).show();
+        // 탭바 생성
+        ViewPager viewPager = findViewById(R.id.pager);
+        setupViewPager(viewPager);
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        // 네비게이션 드로어 관리
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView= findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            // 내 계정
+            case R.id.menu_user: {
+                // refresh버튼 눌렀을 때
+                item.setIcon(R.drawable.ic_person_black_24dp);
+                qlFragment.getFirebaseData();
+                qdlFragment.getFirebaseData();
+                break;
+            }
+            // 내 답변목록
+            case R.id.menu_answer: {
+                Intent intent = new Intent(this, AnswerListActivity.class);
+                intent.putExtra("userKey", userIndexId);
+                startActivity(intent);
+                break;
+            }
+            // 로그아웃 버튼 클릭 이벤트 > dialog 예/아니오
+            case R.id.menu_logout: {
                 Log.v("알림", "구글 LOGOUT");
-                AlertDialog.Builder alt_bld = new AlertDialog.Builder(view.getContext());
+                AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
                 alt_bld.setMessage("로그아웃 하시겠습니까?").setCancelable(false)
                         .setPositiveButton("네",
                                 new DialogInterface.OnClickListener() {
@@ -98,35 +144,15 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
                 alert.setTitle("로그아웃");
 
                 // 대화창 배경 색 설정
-                alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255,62,79,92)));
+                alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 62, 79, 92)));
                 alert.show();
+                break;
             }
-        });
-
-        //Toast.makeText(this, "봉사자 - 질문 선택",Toast.LENGTH_SHORT).show();
-        ViewPager viewPager = findViewById(R.id.pager);
-        setupViewPager(viewPager);
-        TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-        // 홈 버튼 눌렀을 때
-        findViewById(R.id.button_home).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        // refresh버튼 눌렀을 때
-        findViewById(R.id.button_refresh).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setAlpha(.5f);
-                qlFragment.getFirebaseData();
-                qdlFragment.getFirebaseData();
-                view.setAlpha(1f);
-            }
-        });
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        item.setShowAsActionFlags(DrmStore.Action.DEFAULT);
+        return true;
     }
-
 
     // 유저의 인덱스 아이디(일련번호)를 알아내는 함수 (액티비티 시작할때 실행됨)
     public void getUserIndexId(){
@@ -237,8 +263,8 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
         Log.d("testt", " Q L A onStart");
 
         if(!firstTime) {
-            qlFragment.getFirebaseData();
-            qdlFragment.getFirebaseData();
+            qlFragment.getFirstFirebaseData();
+            qdlFragment.getFirstFirebaseData();
         }
     }
 
@@ -257,7 +283,11 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
     @Override
     public void onBackPressed() {
 
-        super.onBackPressed();
+        if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
 //        long tempTime = System.currentTimeMillis();
 //        long intervalTime = tempTime - backPressedTime;
 //
@@ -271,4 +301,6 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
 //            Toast.makeText(getApplicationContext(), "한번 더 뒤로가기 누르면 꺼집니다", Toast.LENGTH_SHORT).show();
 //        }
     }
+
+
 }

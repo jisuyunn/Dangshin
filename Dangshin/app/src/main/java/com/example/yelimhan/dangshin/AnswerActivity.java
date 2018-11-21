@@ -20,10 +20,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -50,6 +53,7 @@ public class AnswerActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private boolean isPlaying = false;
     private boolean isPrepared = false;
+    private UserInfo userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,26 @@ public class AnswerActivity extends AppCompatActivity {
                 .into(imageView);
         questionText = findViewById(R.id.questiontext);
 
+        // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String userId = user.getEmail();
+        // firebase database 참조 객체
+        DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
+        if(user != null) {
+            Query query = table.orderByChild("u_googleId").equalTo(userId);
+            query.addListenerForSingleValueEvent(new ValueEventListener() {       // 역할 알아오기
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        userInfo = snapshot.getValue(UserInfo.class);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }
         // 음성 파일 재생
         Task<Uri> uri = storageReference.child(questionInfo.q_voice).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -125,17 +149,20 @@ public class AnswerActivity extends AppCompatActivity {
                 if (!editText.getText().toString().equals("")) {
                     mDatabase = FirebaseDatabase.getInstance().getReference("AnswerInfo");
                     String newAnswer = mDatabase.push().getKey();
-                    AnswerInfo answerInfo = new AnswerInfo(newAnswer, questionInfo.q_id, "a", editText.getText().toString());
+                    AnswerInfo answerInfo = new AnswerInfo(newAnswer, questionInfo.q_id, userInfo.u_googleId, editText.getText().toString());
                     mDatabase.child(newAnswer).setValue(answerInfo);
                     mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
                     mDatabase.child(questionInfo.q_id).child("checkAnswer").setValue(true);
-                    //startActivity(new Intent(AnswerActivity.this,QuestionListActivity.class));
+
+                    // startActivity(new Intent(AnswerActivity.this,QuestionListActivity.class));
+                    // 질문자에게 푸쉬 알람 보내는 함수
                     sendPushAlert(questionInfo.q_id);
                 }
             }
         });
     }
 
+    // 질문자에게 푸쉬 알람 보내는 함수
     public void sendPushAlert(String answerkey) {
         final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
         final String SERVER_KEY = "AAAAQjYIgGo:APA91bFDx0BUk2pa77EAAmeAIak73owBnfZbZitHV3G3e7_4_wCSpkv2yqCga0fk03jJ8eTvyxmNv0Oqze0FuzwFDYm9vE_zSrBiLt-tw5RTDX6W6I79pGnU91rTdddbcwaU5qOgIEA-";
@@ -152,7 +179,10 @@ public class AnswerActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                        String userkey = snapshot.getKey();
+                                        FirebaseDatabase.getInstance().getReference("UserInfo").child(userkey).child("u_haveQuestion").setValue(2);
                                         UserInfo userInfo = snapshot.getValue(UserInfo.class);
+
                                         final String usertoken = userInfo.u_token;
                                         new Thread(new Runnable() {
                                             @Override
@@ -163,8 +193,9 @@ public class AnswerActivity extends AppCompatActivity {
                                                     JSONObject notification = new JSONObject();
                                                     notification.put("body", "눌러서 알림을 확인하세요!");
                                                     notification.put("title", getString(R.string.app_name));
-                                                    root.put("notification", notification);
+                                                    root.put("data", notification);
                                                     root.put("to", usertoken);
+                                                    //root.put("click_action", "OPEN_ACTIVITY");
                                                     // FMC 메시지 생성 end
 
                                                     URL Url = new URL(FCM_MESSAGE_URL);
@@ -186,25 +217,10 @@ public class AnswerActivity extends AppCompatActivity {
                                             }
                                         }).start();
                                     }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-
+                                }@Override public void onCancelled(@NonNull DatabaseError databaseError) {}});
+            }@Override public void onCancelled(@NonNull DatabaseError databaseError) {}});
     }
+
     public void stt() {
         Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         i.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());

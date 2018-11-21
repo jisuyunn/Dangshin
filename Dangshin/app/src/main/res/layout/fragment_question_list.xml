@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/text3"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="   질문을 눌러 답변을 시작하세요!"
+        android:textSize="18sp" />
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <GridView
-            android:background="#c6d4ee"
-            android:scrollbars="none"
-            android:id="@+id/gridView"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="15dp"
-            android:columnWidth="60dp"
-            android:gravity="center"
-            android:horizontalSpacing="10dp"
-            android:numColumns="2"
-            android:verticalSpacing="10dp"/>
+            android:layout_height="wrap_content"
+            app:spanCount="2"
+            app:layoutManager="android.support.v7.widget.StaggeredGridLayoutManager">
+        </android.support.v7.widget.RecyclerView>
+
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/moreloading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.ProgressBar.Small"/>
 
     </LinearLayout>
+</LinearLayout>
 </android.support.constraint.ConstraintLayout>

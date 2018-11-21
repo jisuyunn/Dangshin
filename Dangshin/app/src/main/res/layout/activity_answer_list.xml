@@ -4,6 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AnswerListActivity">
+    tools:context=".AnswerListActivity"
+    android:layout_margin="5dp">
+
+    <include android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        layout="@layout/fragment_question_list"/>
 
 </android.support.constraint.ConstraintLayout>
