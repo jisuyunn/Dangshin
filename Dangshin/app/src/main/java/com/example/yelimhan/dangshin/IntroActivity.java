@@ -44,6 +44,7 @@ public class IntroActivity extends AppCompatActivity {
     private Button btChoose;
     private Button btUpload;
     private Button btCamera;
+    private Button btCamera2;
     private ImageView ivPreview;
 
     private Uri filePath;
@@ -63,6 +64,8 @@ public class IntroActivity extends AppCompatActivity {
         btChoose = (Button) findViewById(R.id.bt_choose);
         btUpload = (Button) findViewById(R.id.bt_upload);
         btCamera = (Button) findViewById(R.id.bt_camera);
+        btCamera2 = (Button) findViewById(R.id.bt_customcamera);
+
         ivPreview = (ImageView) findViewById(R.id.iv_preview);
 
         //버튼 클릭 이벤트
@@ -92,7 +95,13 @@ public class IntroActivity extends AppCompatActivity {
 
             }
         });
-
+        btCamera2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(IntroActivity.this, CustomCameraActivity.class);
+                startActivityForResult(intent, 2222);
+            }
+        });
     }
 
     public void permissionCheck(){
@@ -178,6 +187,11 @@ public class IntroActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             filePath = photoURI;
         }
+        if (requestCode == 2222 && resultCode == RESULT_OK){
+            String path = data.getStringExtra("PATH");
+            Log.d("testt", path);
+            filePath = Uri.fromFile(new File(path));
+        }
     }
 
     private Uri getFileUri() {
@@ -211,8 +225,6 @@ public class IntroActivity extends AppCompatActivity {
 
 
     }
-
-
 
     //upload the file
     private void uploadFile(Uri fileUri) {
