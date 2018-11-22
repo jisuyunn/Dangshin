@@ -25,16 +25,23 @@
             android:id="@+id/recordlinear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/playbutton"
-            android:text="재생"
-            android:layout_width="100dp"
-            android:layout_height="50dp" />
-        <Button
-            android:id="@+id/stopbutton"
-            android:text="정지"
-            android:layout_width="100dp"
-            android:layout_height="50dp" />
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/playbutton"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/selector_stop_play" />
+                <SeekBar
+                    android:id="@+id/seekbar"
+                    android:layout_width="500dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp" />
+            </RelativeLayout>
         </LinearLayout>
         <EditText
             android:hint="답변을 달아주세요"

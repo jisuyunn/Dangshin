@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,9 +22,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import static com.firebase.ui.auth.AuthUI.TAG;
 
 public class QuestionListFragment extends Fragment {
 
@@ -49,6 +54,21 @@ public class QuestionListFragment extends Fragment {
 
         // 파이어베이스에서 데이터 받아오기
         getFirstFirebaseData();
+        // 당겨서 새로고침
+        final SwipyRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
+        swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh(SwipyRefreshLayoutDirection direction) {
+                if(direction == SwipyRefreshLayoutDirection.TOP) {
+                    getFirstFirebaseData();
+                    swipeRefreshLayout.setRefreshing(false);
+                } else if(direction == SwipyRefreshLayoutDirection.BOTTOM) {
+                    getFirebaseData();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
 
         return view;
     }
@@ -104,11 +124,14 @@ public class QuestionListFragment extends Fragment {
                         imagePath.remove(0);
                     }
                 }
-                gridImageAdapter = new QuestionListImageAdapter(context,path,false);
+                gridImageAdapter = new QuestionListImageAdapter(recyclerView,context,path,false);
                 recyclerView.setAdapter(gridImageAdapter);
                 //final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
                 final GridLayoutManager manager = new GridLayoutManager(context,2);
                 recyclerView.setLayoutManager(manager);
+
+
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -132,7 +155,11 @@ public class QuestionListFragment extends Fragment {
                 imagePath.remove(0);
             }
         }
-        gridImageAdapter.add(path);
+        if(path.size()>0) {
+            gridImageAdapter.add(path);
+        }
     }
+
+
 
 }

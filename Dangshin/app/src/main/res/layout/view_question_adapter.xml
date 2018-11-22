@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
 
     <FrameLayout
-        android:layout_margin="2dp"
+        android:background="@color/colorSeekbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView

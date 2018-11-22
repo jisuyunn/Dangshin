@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +45,21 @@ public class QuestionDoneListFragment extends Fragment {
         view.findViewById(R.id.text3).setVisibility(View.GONE);
         // 파이어베이스에서 데이터 받아오기
         getFirstFirebaseData();
+        // 당겨서 새로고침
+        final SwipyRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
+        swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh(SwipyRefreshLayoutDirection direction) {
+                if(direction == SwipyRefreshLayoutDirection.TOP) {
+                    getFirstFirebaseData();
+                    swipeRefreshLayout.setRefreshing(false);
+                } else if(direction == SwipyRefreshLayoutDirection.BOTTOM) {
+                    getFirebaseData();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
 
         return view;
     }
@@ -98,8 +116,8 @@ public class QuestionDoneListFragment extends Fragment {
                         imagePath.remove(0);
                     }
                 }
-                gridImageAdapter = new QuestionListImageAdapter(context,path,true);
-                StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+                gridImageAdapter = new QuestionListImageAdapter(recyclerView,context,path,true);
+                GridLayoutManager manager = new GridLayoutManager(context,2);
                 recyclerView.setAdapter(gridImageAdapter);
                 recyclerView.setLayoutManager(manager);
                 // 스크롤 맨 아래 닿았을 때

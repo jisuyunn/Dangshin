@@ -9,6 +9,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+
+import static com.firebase.ui.auth.AuthUI.TAG;
 
 public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListImageAdapter.ViewHolder>{
 
@@ -43,31 +46,11 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
         void onLoadMore();
     }
 
-    public QuestionListImageAdapter(Context c, ArrayList<QuestionInfo> uris, boolean flag) {
+    public QuestionListImageAdapter(RecyclerView recyclerView, Context c, ArrayList<QuestionInfo> uris, boolean flag) {
         mContext = c;
         questionInfos = new ArrayList<QuestionInfo>();
         questionInfos.addAll(uris);
         doneFlag = flag;
-
-        // 프로그레스 로딩
-        /*if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
-            final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView
-                    .getLayoutManager();
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    totalItemCount = linearLayoutManager.getItemCount();
-                    lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                    if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                        if (onLoadMoreListener != null) {
-                            onLoadMoreListener.onLoadMore();
-                        }
-                        isLoading = true;
-                    }
-                }
-            });
-        }*/
     }
 
     @Override
