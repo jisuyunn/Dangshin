@@ -1,4 +1,4 @@
-package com.example.yelimhan.dangshin;
+﻿package com.example.yelimhan.dangshin;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -525,7 +525,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
             Date now = new Date();
             String filename = formatter.format(now) + ".png";
-            storagePath = filename;
+            storagePath = "image/" + filename;
             //storage 주소와 폴더 파일명을 지정해 준다.
             StorageReference storageRef = storage.getReferenceFromUrl("gs://dangshin-fa136.appspot.com").child("images/" + filename);
             //올라가거라...
@@ -591,7 +591,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
             Date now = new Date();
             String filename = formatter.format(now) + ".mp4";
-            storageVPath = filename;
+            storageVPath = "voice/" + filename;
             //storage 주소와 폴더 파일명을 지정해 준다.
             StorageMetadata metadata = new StorageMetadata.Builder()
                     .setContentType("audio/mp4")
