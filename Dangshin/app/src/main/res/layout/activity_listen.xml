@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,38 +10,53 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <ImageView
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
             android:id="@+id/answerimage2"
             android:layout_width="500dp"
-            android:layout_height="300dp" />
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:layout_margin="5dp" />
+
         <LinearLayout
-            android:visibility="gone"
             android:id="@+id/recordlinear"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/playbutton"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/selector_stop_play" />
+                <SeekBar
+                    android:id="@+id/seekbar"
+                    android:layout_width="500dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp" />
+            </RelativeLayout>
+
             <Button
-                android:id="@+id/playbutton"
-                android:text="재생"
-                android:layout_width="100dp"
-                android:layout_height="50dp" />
-            <Button
-                android:id="@+id/stopbutton"
-                android:text="정지"
-                android:layout_width="100dp"
-                android:layout_height="50dp" />
-            <Button
-                android:visibility="gone"
                 android:id="@+id/reportbutton"
-                android:text="신고"
                 android:layout_width="100dp"
-                android:layout_height="50dp" />
+                android:layout_height="50dp"
+                android:text="신고"
+                android:visibility="gone" />
         </LinearLayout>
+
         <TextView
+            android:layout_margin="5dp"
             android:id="@+id/questiontext2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/answertext2"
             android:layout_width="wrap_content"

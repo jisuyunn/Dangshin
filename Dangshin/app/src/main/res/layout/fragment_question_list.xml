@@ -22,14 +22,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
+        <com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout
+            android:id="@+id/swipe_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:spanCount="2"
-            app:layoutManager="android.support.v7.widget.StaggeredGridLayoutManager">
-        </android.support.v7.widget.RecyclerView>
-
+            app:srl_direction="both">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:spanCount="2"
+                app:layoutManager="android.support.v7.widget.StaggeredGridLayoutManager">
+            </android.support.v7.widget.RecyclerView>
+        </com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout>
         <ProgressBar
             android:visibility="gone"
             android:id="@+id/moreloading"

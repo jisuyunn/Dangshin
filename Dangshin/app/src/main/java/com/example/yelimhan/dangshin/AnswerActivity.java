@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ public class AnswerActivity extends AppCompatActivity {
     private boolean isPlaying = false;
     private boolean isPrepared = false;
     private UserInfo userInfo;
+    private SeekBar seekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,58 +91,7 @@ public class AnswerActivity extends AppCompatActivity {
             });
         }
 
-        final Button playbutton = findViewById(R.id.playbutton);
-        final Button stopbutton = findViewById(R.id.stopbutton);
-        playbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isPrepared) {
-                    if (isPlaying) {
-                        mediaPlayer.pause();
-                        isPlaying = false;
-                        playbutton.setText("재생");
-                    } else {
-                        mediaPlayer.start();
-                        isPlaying = true;
-                        playbutton.setText("일시정지");
-                    }
-                }
-            }
-        });
-        stopbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isPrepared = false;
-                mediaPlayer.stop();
-                isPlaying = false;
-                playbutton.setText("재생");
-                try {
-                    mediaPlayer.prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        // 음성 파일 재생
-        Task<Uri> uri = storageReference.child(questionInfo.q_voice).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                try {
-                    mediaPlayer.setDataSource(getApplicationContext(), uri);
-                    mediaPlayer.prepare();
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            isPrepared = true;
-                            findViewById(R.id.recordlinear).setVisibility(View.VISIBLE);
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
+        setMediaPlayer();
 
         // STT
         questionText.setText("음성녹음 STT한 질문글");
@@ -161,6 +112,87 @@ public class AnswerActivity extends AppCompatActivity {
                     // startActivity(new Intent(AnswerActivity.this,QuestionListActivity.class));
                     // 질문자에게 푸쉬 알람 보내는 함수
                     sendPushAlert(questionInfo.q_id);
+                }
+            }
+        });
+    }
+
+    // 재생 관련 함수
+    public void setMediaPlayer() {
+        final Button playbutton = findViewById(R.id.playbutton);
+        seekBar = findViewById(R.id.seekbar);
+
+        // 음성 파일 재생
+        storageReference.child(questionInfo.q_voice).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                try {
+                    mediaPlayer.setDataSource(getApplicationContext(), uri);
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                seekBar.setMax(mediaPlayer.getDuration());
+                seekBar.setProgress(0);
+                isPrepared = true;
+                findViewById(R.id.recordlinear).setVisibility(View.VISIBLE);
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if(isPrepared) {
+                    isPlaying = false;
+                    mediaPlayer.seekTo(0);
+                    seekBar.setProgress(0);
+                    playbutton.setSelected(false);
+                }
+            }
+        });
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                if(isPrepared && isPlaying) {
+                    isPlaying = false;
+                    mediaPlayer.pause();
+                    playbutton.setSelected(false);
+                }
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if(isPrepared) {
+                    mediaPlayer.seekTo(seekBar.getProgress());
+                    if (seekBar.getProgress() == seekBar.getMax()) {
+                        isPlaying = false;
+                        playbutton.setSelected(false);
+                    }
+                }
+            }
+        });
+        playbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isPrepared) {
+                    if (isPlaying) {
+                        isPlaying = false;
+                        mediaPlayer.pause();
+                        v.setSelected(false);
+                    } else {
+                        isPlaying = true;
+                        new PlayRecord().start();
+                        mediaPlayer.start();
+                        v.setSelected(true);
+                    }
                 }
             }
         });
@@ -290,6 +322,21 @@ public class AnswerActivity extends AppCompatActivity {
         isPrepared = false;
         mediaPlayer.stop();
         isPlaying = false;
+    }
+
+    public class PlayRecord extends Thread {
+        @Override
+        public void run() {
+            try {   // 시작할 때 버퍼링 임시 해결
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            while(isPlaying&&isPrepared) {
+                seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            }
+
+        }
     }
 
 }

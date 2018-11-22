@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
@@ -16,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
 import java.util.ArrayList;
 
@@ -55,6 +58,21 @@ public class AnswerListActivity extends AppCompatActivity {
                         // 봉사자라면
                         if(userInfo.u_position.equals("Volunteer")) {
                             getFirstFirebaseData();
+                            // 당겨서 새로고침
+                            final SwipyRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_layout);
+                            swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
+                            swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
+                                @Override
+                                public void onRefresh(SwipyRefreshLayoutDirection direction) {
+                                    if(direction == SwipyRefreshLayoutDirection.TOP) {
+                                        getFirstFirebaseData();
+                                        swipeRefreshLayout.setRefreshing(false);
+                                    } else if(direction == SwipyRefreshLayoutDirection.BOTTOM) {
+                                        getFirebaseData();
+                                        swipeRefreshLayout.setRefreshing(false);
+                                    }
+                                }
+                            });
                         }
                     }
                 }
@@ -118,10 +136,9 @@ public class AnswerListActivity extends AppCompatActivity {
                 imagePath.remove(0);
             }
         }
-        gridImageAdapter = new QuestionListImageAdapter(this,path,true);
+        gridImageAdapter = new QuestionListImageAdapter(recyclerView,this,path,true);
         recyclerView.setAdapter(gridImageAdapter);
-        final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        manager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        final GridLayoutManager manager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(manager);
     }
 
