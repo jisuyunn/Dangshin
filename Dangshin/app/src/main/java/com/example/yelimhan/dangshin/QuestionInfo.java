@@ -31,4 +31,32 @@ public class QuestionInfo implements Serializable {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
         q_dataTime = dateFormat.format(nowDate);
     }
+
+    public void setQ_dataTime(String q_dataTime) {
+        this.q_dataTime = q_dataTime;
+    }
+
+    public void setQ_id(String q_id) {
+        this.q_id = q_id;
+    }
+
+    public void setQ_pic(String q_pic) {
+        this.q_pic = q_pic;
+    }
+
+    public void setQ_writer(String q_writer) {
+        this.q_writer = q_writer;
+    }
+
+    public void setQ_voice(String q_voice) {
+        this.q_voice = q_voice;
+    }
+
+    public void setCheckAnswer(boolean checkAnswer) {
+        this.checkAnswer = checkAnswer;
+    }
+
+    public void setCheckUrgent(boolean checkUrgent) {
+        this.checkUrgent = checkUrgent;
+    }
 }

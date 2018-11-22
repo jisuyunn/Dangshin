@@ -46,6 +46,9 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
@@ -53,10 +56,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,6 +70,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
+    private DatabaseReference mDatabase;
     public Button bt;
     public TextView textView;
     public ImageView imageView;
@@ -78,6 +78,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     private static final int SWIPE_MAX_OFF_PATH = 500;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
     GestureDetector detector;
+    String userId = "";
     //사진
     Uri photoURI;
     private Uri filePath;
@@ -85,6 +86,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.CAMERA,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private int stage;
+    private String storagePath = "";
     //tts, stt
     TextToSpeech tts;
     SpeechRecognizer mRecognizer;
@@ -93,6 +95,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     boolean isRecording = false;
     String mPath = "";
     Uri uri = null;
+    private String storageVPath = "";
+
     public static final int RECORD_AUDIO = 0;
     public static final int CUSTOM_CAMERA = 1000;
 
@@ -181,6 +185,10 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             }
         });
 
+        // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        userId = user.getEmail();
+
         detector = new GestureDetector(this, new GestureAdapter());
     }
 
@@ -260,6 +268,11 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 String speech = "질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
                 tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
                 stage = 2;
+
+                mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
+                String newQuestion = mDatabase.push().getKey();
+                QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, false);
+                mDatabase.child(newQuestion).setValue(questionInfo);
             }
         }
 
@@ -512,6 +525,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
             Date now = new Date();
             String filename = formatter.format(now) + ".png";
+            storagePath = filename;
             //storage 주소와 폴더 파일명을 지정해 준다.
             StorageReference storageRef = storage.getReferenceFromUrl("gs://dangshin-fa136.appspot.com").child("images/" + filename);
             //올라가거라...
@@ -577,6 +591,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
             Date now = new Date();
             String filename = formatter.format(now) + ".mp4";
+            storageVPath = filename;
             //storage 주소와 폴더 파일명을 지정해 준다.
             StorageMetadata metadata = new StorageMetadata.Builder()
                     .setContentType("audio/mp4")
