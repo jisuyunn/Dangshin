@@ -16,6 +16,7 @@
             android:layout_width="500dp"
             android:layout_height="300dp" />
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/recordlinear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -27,6 +28,12 @@
             <Button
                 android:id="@+id/stopbutton"
                 android:text="정지"
+                android:layout_width="100dp"
+                android:layout_height="50dp" />
+            <Button
+                android:visibility="gone"
+                android:id="@+id/reportbutton"
+                android:text="신고"
                 android:layout_width="100dp"
                 android:layout_height="50dp" />
         </LinearLayout>

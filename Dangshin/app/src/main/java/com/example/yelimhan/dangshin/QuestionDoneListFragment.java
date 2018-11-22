@@ -39,7 +39,7 @@ public class QuestionDoneListFragment extends Fragment {
         context = container.getContext();
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2,15,false));
-
+        view.findViewById(R.id.text3).setVisibility(View.GONE);
         // 파이어베이스에서 데이터 받아오기
         getFirstFirebaseData();
 

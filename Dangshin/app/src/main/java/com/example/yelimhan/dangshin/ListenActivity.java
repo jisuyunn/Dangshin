@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -52,6 +53,7 @@ public class ListenActivity extends AppCompatActivity {
     private String text;
     private float curpos;
     private String utteranceId;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,7 @@ public class ListenActivity extends AppCompatActivity {
 
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = user.getEmail();
+        userId = user.getEmail();
         // firebase database 참조 객체
         DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
         if(user != null) {
@@ -75,65 +77,79 @@ public class ListenActivity extends AppCompatActivity {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         UserInfo ui = snapshot.getValue(UserInfo.class);
                         userReference = snapshot.getRef();
+                        if(ui.u_position.equals("Volunteer")) {
+                            final Button playbutton = findViewById(R.id.playbutton);
+                            final Button stopbutton = findViewById(R.id.stopbutton);
+                            playbutton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if(isPrepared) {
+                                        if (isPlaying) {
+                                            mediaPlayer.pause();
+                                            isPlaying = false;
+                                            playbutton.setText("재생");
+                                        } else {
+                                            mediaPlayer.start();
+                                            isPlaying = true;
+                                            playbutton.setText("일시정지");
+                                        }
+                                    }
+                                }
+                            });
+                            stopbutton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mediaPlayer.stop();
+                                    isPlaying = false;
+                                    playbutton.setText("재생");
+                                    try {
+                                        mediaPlayer.prepare();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            // 음성 파일 재생
+                            Task<Uri> uri = storageReference.child(questionInfo.q_voice).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    try {
+                                        mediaPlayer.setDataSource(getApplicationContext(), uri);
+                                        mediaPlayer.prepare();
+                                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                            @Override
+                                            public void onPrepared(MediaPlayer mp) {
+                                                isPrepared = true;
+                                                findViewById(R.id.recordlinear).setVisibility(View.VISIBLE);
+                                            }
+                                        });
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        }
                         showAnswer(ui.u_position);
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
         }
+    }
 
-        // 음성 파일 재생
-        Task<Uri> uri = storageReference.child(questionInfo.q_voice).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                try {
-                    mediaPlayer.setDataSource(getApplicationContext(), uri);
-                    mediaPlayer.prepare();
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            isPrepared = true;
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        final Button playbutton = findViewById(R.id.playbutton);
-        playbutton.setOnClickListener(new View.OnClickListener() {
+    private void doreport() {
+        final Button reportbutton = findViewById(R.id.reportbutton);
+        reportbutton.setVisibility(View.VISIBLE);
+        reportbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isPrepared) {
-                    if (isPlaying) {
-                        mediaPlayer.pause();
-                        isPlaying = false;
-                        playbutton.setText("재생");
-                    } else {
-                        mediaPlayer.start();
-                        isPlaying = true;
-                        playbutton.setText("일시정지");
-                    }
-                }
-            }
-        });
-        findViewById(R.id.stopbutton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mediaPlayer.stop();
-                isPlaying = false;
-                playbutton.setText("재생");
-                try {
-                    mediaPlayer.prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Toast.makeText(getApplicationContext(), "신고하기", Toast.LENGTH_LONG).show();
             }
         });
     }
+
 
     private void showAnswer(final String u_position) {
         if (u_position.equals("Volunteer")) {      // 봉사자라면
@@ -157,6 +173,9 @@ public class ListenActivity extends AppCompatActivity {
                     answerText.setText(text);
                     if (u_position.equals("Blind")) {    // 시각 장애인 이라면
                         texttospeechs();
+                    }
+                    if (!userId.equals(snapshot.child("a_writer").getValue().toString())) {
+                        doreport();
                     }
                 }
             }
@@ -237,6 +256,9 @@ public class ListenActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+        isPrepared = false;
+        mediaPlayer.stop();
+        isPlaying = false;
         super.onBackPressed();
     }
 

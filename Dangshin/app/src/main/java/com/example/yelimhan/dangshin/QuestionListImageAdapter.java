@@ -120,7 +120,7 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
         if (!doneFlag && !questionInfos.get(position).checkAnswer) {
             GlideApp.with(mContext)
                     .load(storageReference.child(questionInfo.q_pic))
-                    .override(Width)
+                    //.placeholder(R.drawable.ic_image_black_24dp)
                     .into(holder.image);
             holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -139,7 +139,7 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
         if (doneFlag && questionInfos.get(position).checkAnswer) {
             GlideApp.with(mContext)
                     .load(storageReference.child(questionInfo.q_pic))
-                    .override(Width)
+                    //.placeholder(R.drawable.ic_image_black_24dp)
                     .into(holder.image);
             holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override

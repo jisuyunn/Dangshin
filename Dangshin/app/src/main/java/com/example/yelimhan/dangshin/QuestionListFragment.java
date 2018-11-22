@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -90,7 +91,6 @@ public class QuestionListFragment extends Fragment {
                     QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
                     imagePath.add(questionInfo);
                 }
-                //Collections.reverse(imagePath);
                 // 그리드 뷰 사용
                 int size = imagePath.size();
                 if(size < MaxData) {
@@ -106,8 +106,8 @@ public class QuestionListFragment extends Fragment {
                 }
                 gridImageAdapter = new QuestionListImageAdapter(context,path,false);
                 recyclerView.setAdapter(gridImageAdapter);
-                final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-                manager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+                //final StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+                final GridLayoutManager manager = new GridLayoutManager(context,2);
                 recyclerView.setLayoutManager(manager);
             }
             @Override
