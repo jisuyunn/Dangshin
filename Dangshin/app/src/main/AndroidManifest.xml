@@ -13,6 +13,7 @@
     <uses-permission
         android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USER_FULL"/>
 
     <application
         android:allowBackup="true"
@@ -30,7 +31,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
-
         <service android:name=".PushMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -41,25 +41,21 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
-        <activity android:name=".IntroActivity" >
-
-        </activity>
-
-        <activity android:name=".QuestionActivity" />
-        <activity android:name=".QuestionAgainActivity" />
-        <activity android:name=".AnswerActivity" />
-        <activity android:name=".UserActivity" />
-        <activity android:name=".ReportActivity" />
-        <activity android:name=".AnswerListActivity" />
-        <activity android:name=".ListenActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".IntroActivity" ></activity>
+        <activity android:name=".QuestionActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".QuestionAgainActivity" />
+        <activity android:name=".AnswerActivity" />
+        <activity android:name=".UserActivity" />
+        <activity android:name=".ReportActivity" />
+        <activity android:name=".AnswerListActivity" />
+        <activity android:name=".ListenActivity" />
+        <activity android:name=".MainActivity"></activity>
         <activity android:name=".SignInActivity" />
         <activity android:name=".QuestionListActivity" />
         <activity android:name=".RecordActivity"></activity>

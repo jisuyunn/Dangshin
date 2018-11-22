@@ -1,17 +1,40 @@
 package com.example.yelimhan.dangshin;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.provider.MediaStore;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.GestureDetector;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -20,7 +43,27 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import static com.example.yelimhan.dangshin.R.*;
 
 
 // 질문하기 (Blind)
@@ -29,31 +72,86 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
     public Button bt;
+    public TextView textView;
+    public ImageView imageView;
+    private static final int SWIPE_MIN_DISTANCE = 120;
+    private static final int SWIPE_MAX_OFF_PATH = 500;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+    GestureDetector detector;
+    //사진
+    Uri photoURI;
+    private Uri filePath;
+    private String imgPath = "";
+    String[] REQUIRED_PERMISSIONS  = {Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private int stage;
+    //tts, stt
+    TextToSpeech tts;
+    SpeechRecognizer mRecognizer;
+    //음성녹음
+    MediaRecorder mRecorder = null;
+    boolean isRecording = false;
+    String mPath = "";
+    Uri uri = null;
+    public static final int RECORD_AUDIO = 0;
+    public static final int CUSTOM_CAMERA = 1000;
 
-    float curpos;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_question);
-
+        setContentView(layout.activity_question);
 
         Toast.makeText(this, "  Blind - 질문하기 (QuestionActivity",Toast.LENGTH_SHORT).show();
+        permissionCheck();
 
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder
                 (GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken(getString(string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this )
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        bt = (Button) findViewById(R.id.logout);
+        bt = (Button) findViewById(id.logout);
+        textView = findViewById(id.textView);
+        imageView = findViewById(id.imageView);
+        stage = 0;
+        tts = new TextToSpeech(QuestionActivity.this, new TextToSpeech.OnInitListener(){
+            @Override
+            public void onInit(int status) {
+                if(status != android.speech.tts.TextToSpeech.ERROR){
+                    tts.setLanguage(Locale.KOREAN);
+                }
+                String speach = "질문이 없네요\n\n위로 화면을 밀면 바로 질문하실 수 있습니다.";
+                tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
 
+                if(status == TextToSpeech.SUCCESS) {
+                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                        @Override
+                        public void onStart(String utteranceId) {
 
+                        }
+
+                        @Override
+                        public void onDone(String Id) {
+
+                        }
+
+                        @Override
+                        public void onError(String utteranceId) {
+
+                        }
+                    });
+                }
+            }
+        });
+
+        mRecorder = new MediaRecorder();
         // 로그아웃 버튼 클릭 이벤트 > dialog 예/아니오
-        Button logout_btn_google = (Button) findViewById(R.id.logout);
+        Button logout_btn_google = (Button) findViewById(id.logout);
         logout_btn_google.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -82,7 +180,10 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 alert.show();
             }
         });
+
+        detector = new GestureDetector(this, new GestureAdapter());
     }
+
 
     // 로그아웃
     public void signOut() {
@@ -122,18 +223,451 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                curpos = event.getY();
-                break;
-            case MotionEvent.ACTION_UP: {
-                float diff = event.getY() - curpos;
-                if(diff < -300) {       // 위로 스와이프 해서 질문하기
-                    Toast.makeText(getApplicationContext(), "swipe", Toast.LENGTH_SHORT).show();
-                }
-                break;
+        detector.onTouchEvent(event);
+        return true;
+    }
+
+    class GestureAdapter implements GestureDetector.OnGestureListener{
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            if(stage == 1){
+                mRecorder.stop();
+                mRecognizer.stopListening();
+                isRecording = false;
+                uploadVoiceFile();
+                textView.setText("질문 등록이 완료되었습니다.\n답변이 오면 알려드릴게요!");
+                String speech = "질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
+                tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+                stage = 2;
             }
         }
-        return super.onTouchEvent(event);
+
+        @SuppressLint("WrongConstant")
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                double distanceX = Math.abs(e1.getX() - e2.getY());
+                double distanceY = Math.abs(e1.getY() - e2.getY());
+                //if (distanceX > SWIPE_MAX_OFF_PATH || distanceY > SWIPE_MAX_OFF_PATH) {
+//                    Toast.makeText(getApplicationContext(),
+//                            Double.toString(distanceX) + "," + Double.toString(distanceY),
+//                            Toast.LENGTH_SHORT).show();
+                //    return true;
+                //}
+
+                // right to left swipe
+//                if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+//                    Toast.makeText(getApplicationContext(), "Left swipe", Toast.LENGTH_SHORT).show();
+//                } // left to right swipe
+//                else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+//                    Toast.makeText(getApplicationContext(), "Right Swipe", Toast.LENGTH_SHORT).show();
+//                } //down to up swipe
+                if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 0) {
+                    Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
+                    String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.\n\n3초뒤에 사진이 찍힙니다.\n3 2 1";
+                    textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.\n\n3초뒤에 사진이 찍힙니다.\n3 2 1");
+                    imageView.setVisibility(View.INVISIBLE );
+                    tts.setPitch(1.0f);
+                    tts.setSpeechRate(1.0f);
+                    tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
+                    final Handler delayHandler = new Handler();
+                    delayHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            goCamera();
+                            stage = 1;
+                        }
+                    }, 9000);
+
+                } // up to down swipe
+                else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                    Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                Log.d("swipe", ex.toString());
+
+            }
+
+            return true;
+        }
+
     }
+
+
+    private void goCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE );
+        List<ResolveInfo> resolvedIntentActivities = QuestionActivity.this.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+
+        photoURI = getFileUri();
+        for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+
+            String packageName = resolvedIntentInfo.activityInfo.packageName;
+
+            QuestionActivity.this.grantUriPermission(packageName,      // 패키지이름
+                    photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        intent.putExtra( MediaStore.EXTRA_OUTPUT, photoURI );
+        startActivityForResult( intent, 1 );
+        //Intent cameraIntent = new Intent(QuestionActivity.this, CustomCameraActivity.class);
+        //startActivityForResult(cameraIntent, CUSTOM_CAMERA);
+    }
+
+    private Uri getFileUri() {
+        // 저장되는 사진 경로
+        String dir_path = "/sdcard/Android/data/com.example.yelimhan.dangshin/";
+        File dir = new File(dir_path);
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+
+        // 저장되는 사진 이름
+        File file = new File( dir, DateFormat.format("yyyy-MM-dd_hhmmss", new Date()).toString()+ ".jpg" );
+        imgPath = file.getAbsolutePath();
+        return FileProvider.getUriForFile( this, getApplicationContext().getPackageName() + ".fileprovider", file );
+    }
+
+    public void permissionCheck(){
+        //권한이 부여되어 있는지 확인
+        int cameraPermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        int writePermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if(cameraPermissionCheck == PackageManager.PERMISSION_GRANTED
+                && writePermissionCheck == PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(getApplicationContext(), "권한 있음", Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(getApplicationContext(), "권한 없음", Toast.LENGTH_SHORT).show();
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])) {
+
+                Toast.makeText(getApplicationContext(), "카메라와 저장공간 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions( QuestionActivity.this, REQUIRED_PERMISSIONS,1000);
+            }else{
+                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, 1000);
+
+                //권한설정 dialog에서 거부를 누르면
+                //ActivityCompat.shouldShowRequestPermissionRationale 메소드의 반환값이 true가 된다.
+                //단, 사용자가 "다시 묻지 않음"을 체크한 경우
+                //거부하더라도 false를 반환하여, 직접 사용자가 권한을 부여하지 않는 이상, 권한을 요청할 수 없게 된다.
+                if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
+                    //이곳에 권한이 왜 필요한지 설명하는 Toast나 dialog를 띄워준 후, 다시 권한을 요청한다.
+                    Toast.makeText(getApplicationContext(), "카메라와 저장공간 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1000 && grantResults.length == REQUIRED_PERMISSIONS.length) {
+            boolean check_result = true;
+
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    check_result = false;
+                    break;
+                }
+            }
+
+            if ( check_result ) {
+
+            }
+            else {
+
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
+                        || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])) {
+
+                    Toast.makeText(this, "퍼미션이 거부되었습니다.",Toast.LENGTH_SHORT).show();
+                    finish();
+
+                }else {
+
+                    Toast.makeText(this, "설정(앱 정보)에서 퍼미션을 허용해야 합니다. ",Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+
+        }
+    }
+
+    //결과 처리
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RECORD_AUDIO && resultCode == RESULT_OK){
+            ArrayList<String> speechList = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            String result = speechList.get(0);
+            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+//            Uri audiouri = data.getData();
+//            ContentResolver contentResolver = getContentResolver();
+//            InputStream inputStream = null;
+//            OutputStream outputStream = null;
+//
+//            try{
+//                inputStream = contentResolver.openInputStream(audiouri);
+//
+//                File targetFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+"/dangshin");
+//                if(!targetFile.exists()){
+//                    targetFile.mkdirs();
+//                }
+//                String mfileName = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".mp4";
+//                mPath = targetFile + "/" + mfileName;
+//                outputStream = new FileOutputStream(targetFile + "/" + mfileName);
+//                int read = 0;
+//                byte[] bytes = new byte[1024];
+//
+//                while((read = inputStream.read(bytes)) != -1)
+//                    outputStream.write(bytes, 0, read);
+//            }catch(IOException e){
+//                e.printStackTrace();
+//            }finally{
+//                if(inputStream != null){
+//                    try{
+//                        inputStream.close();
+//                    }catch(IOException e){
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                if(outputStream != null){
+//                    try{
+//                        outputStream.close();
+//                    }catch(IOException e){
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+        }
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            //filePath = Uri.parse(data.getStringExtra("PATH"));
+            filePath = photoURI;
+            uploadPhotoFile(filePath);
+            String totalSpeak = "더 정확한 답변을 듣기 위해 음성을 녹음할게요.\n\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면 화면을 길게 눌러주세요.\n3 2 1";
+            textView.setText("더 정확한 답변을 듣기 위해\n음성을 녹음할게요.\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면\n화면을 길게 눌러주세요.\n3 2 1");
+            tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            final Handler delayHandler = new Handler();
+            delayHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(isRecording == false){
+                        if (ActivityCompat.checkSelfPermission(QuestionActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+                            ActivityCompat.requestPermissions(QuestionActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                    RECORD_AUDIO);
+                        }
+                    }
+                    initAudioRecorder();
+                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(QuestionActivity.this);
+                    //mRecognizer.setRecognitionListener(listener);
+                    //mRecognizer.startListening(intent);
+                    mRecognizer.setRecognitionListener(listener);
+                    mRecognizer.startListening(intent);
+                    mRecorder.start();
+                    //startActivityForResult(intent, RECORD_AUDIO);
+                    isRecording = true;
+                }
+            }, 12000);
+        }
+    }
+
+    //upload the file
+    private void uploadPhotoFile(Uri fileUri) {
+        //업로드할 파일이 있으면 수행
+        if (fileUri != null) {
+            //업로드 진행 Dialog 보이기
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("업로드중...");
+            progressDialog.show();
+
+            //storage
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            //Unique한 파일명을 만들자.
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
+            Date now = new Date();
+            String filename = formatter.format(now) + ".png";
+            //storage 주소와 폴더 파일명을 지정해 준다.
+            StorageReference storageRef = storage.getReferenceFromUrl("gs://dangshin-fa136.appspot.com").child("images/" + filename);
+            //올라가거라...
+            storageRef.putFile(fileUri)
+                    //성공시
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss(); //업로드 진행 Dialog 상자 닫기
+                            Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    //실패시
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    //진행중
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            @SuppressWarnings("VisibleForTests") //이걸 넣어 줘야 아랫줄에 에러가 사라진다. 넌 누구냐?
+                                    double progress = (100 * taskSnapshot.getBytesTransferred()) /  taskSnapshot.getTotalByteCount();
+                            //dialog에 진행률을 퍼센트로 출력해 준다
+                            progressDialog.setMessage("Uploaded " + ((int) progress) + "% ...");
+                        }
+                    });
+        } else {
+            Toast.makeText(getApplicationContext(), "파일을 먼저 선택하세요.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    void initAudioRecorder(){
+
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        mPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/record.mp4";
+
+        Log.d("file path : ", mPath);
+        mRecorder.setOutputFile(mPath);
+        try {
+            mRecorder.prepare();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void uploadVoiceFile() {
+        if(mPath != null){
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("업로드 중...");
+            progressDialog.show();
+
+            //storage
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            //Unique한 파일명을 만들자.
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
+            Date now = new Date();
+            String filename = formatter.format(now) + ".mp4";
+            //storage 주소와 폴더 파일명을 지정해 준다.
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setContentType("audio/mp4")
+                    .build();
+
+            Uri uri = Uri.fromFile(new File(mPath));
+            StorageReference storageRef = storage.getReferenceFromUrl("gs://dangshin-fa136.appspot.com").child("voice/" + filename);
+            //올라가거라...
+            storageRef.putFile(uri, metadata)
+                    //성공시
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss(); //업로드 진행 Dialog 상자 닫기
+                            Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    //실패시
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(getApplicationContext(), "업로드 실패!", Toast.LENGTH_SHORT).show();
+                            Log.d("error", e.toString());
+                        }
+                    })
+                    //진행중
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            @SuppressWarnings("VisibleForTests") //이걸 넣어 줘야 아랫줄에 에러가 사라진다. 넌 누구냐?
+                                    double progress = (100 * taskSnapshot.getBytesTransferred()) /  taskSnapshot.getTotalByteCount();
+                            //dialog에 진행률을 퍼센트로 출력해 준다
+                            progressDialog.setMessage("Uploaded " + ((int) progress) + "% ...");
+                        }
+                    });
+        } else {
+            Toast.makeText(getApplicationContext(), "파일을 먼저 선택하세요.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private RecognitionListener listener = new RecognitionListener() {
+        @Override
+        public void onReadyForSpeech(Bundle params) {
+
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+
+        }
+
+        @Override
+        public void onRmsChanged(float rmsdB) {
+
+        }
+
+        @Override
+        public void onBufferReceived(byte[] buffer) {
+
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+
+        }
+
+        @Override
+        public void onError(int error) {
+            Toast.makeText(QuestionActivity.this, String.valueOf(error), Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onResults(Bundle results) {
+            String key = "";
+            key = SpeechRecognizer.RESULTS_RECOGNITION;
+            ArrayList<String> mResult = results.getStringArrayList(key);
+
+            String[] rs = new String[mResult.size()];
+            mResult.toArray(rs);
+            Toast.makeText(QuestionActivity.this, rs[0], Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onPartialResults(Bundle partialResults) {
+
+        }
+
+        @Override
+        public void onEvent(int eventType, Bundle params) {
+
+        }
+    };
 }

@@ -14,14 +14,22 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/textView"
         android:lineSpacingExtra="8dp"
         android:gravity="center"
         android:layout_gravity="center"
         android:textSize="25dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="50dp"
         android:text="질문이 없네요\n위로 화면을 밀면\n바로 질문하실 수 있습니다!"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:layout_width="101dp"
+        android:layout_height="83dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="150dp"
+        android:id="@+id/imageView"
+        android:src="@drawable/arrow_up" />
 
 </LinearLayout>
