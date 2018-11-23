@@ -1,4 +1,5 @@
 package com.example.yelimhan.dangshin;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -580,7 +581,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHH_mmss");
             Date now = new Date();
             String filename = formatter.format(now) + ".png";
-            storagePath = "image/" + filename;
+            storagePath = "images/" + filename;
             //storage 주소와 폴더 파일명을 지정해 준다.
             StorageReference storageRef = storage.getReferenceFromUrl("gs://dangshin-fa136.appspot.com").child("images/" + filename);
             //올라가거라...

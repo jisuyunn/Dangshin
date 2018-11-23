@@ -13,7 +13,7 @@
         android:id="@+id/text3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:text="   질문을 눌러 답변을 시작하세요!"
         android:textSize="18sp" />
     <LinearLayout
@@ -22,11 +22,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout
-            android:id="@+id/swipe_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srl_direction="both">
+            <com.baoyz.widget.PullRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
@@ -34,7 +33,7 @@
                 app:spanCount="2"
                 app:layoutManager="android.support.v7.widget.StaggeredGridLayoutManager">
             </android.support.v7.widget.RecyclerView>
-        </com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout>
+            </com.baoyz.widget.PullRefreshLayout>
         <ProgressBar
             android:visibility="gone"
             android:id="@+id/moreloading"

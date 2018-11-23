@@ -62,11 +62,8 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
     @Override
     public void onBindViewHolder(QuestionListImageAdapter.ViewHolder holder, int position) {
         final QuestionInfo questionInfo = questionInfos.get(position);
-        DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
-        int Width = dm.widthPixels/2;
          // 시간계산
         long nowTime = System.currentTimeMillis();
-        Date nowdate = new Date(nowTime);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
         try {
             Date date1 = dateFormat.parse(questionInfo.q_dataTime);
@@ -140,10 +137,6 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
     @Override
     public int getItemCount() {
         return questionInfos.size();
-    }
-
-    public void setLoading() {
-        isLoading = false;
     }
 
     public void add(ArrayList<QuestionInfo> uris) {

@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                             else if(ui.u_haveQuestion == 2)         // 시각장애인의 질문이 있고 답변이 달린 경우 -> ListenActivity
                             {
                                 FirebaseDatabase.getInstance().getReference("QuestionInfo")
-                                        .orderByChild("q_writer").equalTo(userId)
+                                        .orderByKey().equalTo(ui.q_key)
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

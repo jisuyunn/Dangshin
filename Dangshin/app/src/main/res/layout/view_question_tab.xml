@@ -3,6 +3,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/nav_button"
+            android:layout_margin="15dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/selector_nav_menu"/>
+
     <LinearLayout android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:gravity="center_horizontal"
@@ -28,5 +39,6 @@
             app:tabIndicatorHeight="0dp"
             android:id="@+id/tabs"/>
 
+    </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

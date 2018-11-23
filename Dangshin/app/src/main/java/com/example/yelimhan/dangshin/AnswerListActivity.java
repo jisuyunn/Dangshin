@@ -1,6 +1,7 @@
 package com.example.yelimhan.dangshin;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
+import com.baoyz.widget.PullRefreshLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +23,7 @@ import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 // 내 답변 목록 (Volunteer)
@@ -59,17 +62,21 @@ public class AnswerListActivity extends AppCompatActivity {
                         if(userInfo.u_position.equals("Volunteer")) {
                             getFirstFirebaseData();
                             // 당겨서 새로고침
-                            final SwipyRefreshLayout swipeRefreshLayout = findViewById(R.id.swipe_layout);
-                            swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
-                            swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
+                            final PullRefreshLayout layout = (PullRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+                            layout.setColor(Color.MAGENTA);
+                            layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
                                 @Override
-                                public void onRefresh(SwipyRefreshLayoutDirection direction) {
-                                    if(direction == SwipyRefreshLayoutDirection.TOP) {
-                                        getFirstFirebaseData();
-                                        swipeRefreshLayout.setRefreshing(false);
-                                    } else if(direction == SwipyRefreshLayoutDirection.BOTTOM) {
+                                public void onRefresh() {
+                                    getFirstFirebaseData();
+                                    layout.setRefreshing(false);
+                                }
+                            });
+                            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                                @Override
+                                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                                    super.onScrollStateChanged(recyclerView, newState);
+                                    if(!recyclerView.canScrollVertically(1)) {
                                         getFirebaseData();
-                                        swipeRefreshLayout.setRefreshing(false);
                                     }
                                 }
                             });
@@ -124,6 +131,7 @@ public class AnswerListActivity extends AppCompatActivity {
     }
 
     public void printimage() {
+        Collections.reverse(imagePath);
         int size = imagePath.size();
         if(size < MaxData) {
             for (int i = 0; i < size; i++) {

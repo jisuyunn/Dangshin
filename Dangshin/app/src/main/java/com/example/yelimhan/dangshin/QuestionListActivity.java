@@ -39,6 +39,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedOutputStream;
+
 public class QuestionListActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,NavigationView.OnNavigationItemSelectedListener{
 
     private FirebaseAuth mAuth;
@@ -54,6 +56,7 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
     boolean flag = true;
     public DrawerLayout drawerLayout;
     public NavigationView navigationView;
+    private Button nav_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +93,16 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
         tabLayout.setupWithViewPager(viewPager);
 
         // 네비게이션 드로어 관리
+        nav_button = findViewById(R.id.nav_button);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView= findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        nav_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
     }
 

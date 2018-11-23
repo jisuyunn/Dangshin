@@ -1,6 +1,8 @@
 package com.example.yelimhan.dangshin;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -16,7 +18,9 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.baoyz.widget.PullRefreshLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +44,7 @@ public class QuestionListFragment extends Fragment {
     private View view;
     private RecyclerView recyclerView;
     private ArrayList<QuestionInfo> path = new ArrayList<>();
-    private final int MaxData = 8;
+    private final int MaxData = 6;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,7 +59,25 @@ public class QuestionListFragment extends Fragment {
         // 파이어베이스에서 데이터 받아오기
         getFirstFirebaseData();
         // 당겨서 새로고침
-        final SwipyRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_layout);
+        final PullRefreshLayout layout = (PullRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        layout.setColor(Color.MAGENTA);
+        layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getFirstFirebaseData();
+                layout.setRefreshing(false);
+            }
+        });
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(!recyclerView.canScrollVertically(1)) {
+                    getFirebaseData();
+                }
+            }
+        });
+        /*final SwipyRefreshLayout swipeRefreshLayout = view.findViewById(R.id.swipe_layout);
         swipeRefreshLayout.setDirection(SwipyRefreshLayoutDirection.BOTH);
         swipeRefreshLayout.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
@@ -68,7 +90,7 @@ public class QuestionListFragment extends Fragment {
                     swipeRefreshLayout.setRefreshing(false);
                 }
             }
-        });
+        });*/
 
         return view;
     }
@@ -113,6 +135,7 @@ public class QuestionListFragment extends Fragment {
                 }
                 // 그리드 뷰 사용
                 int size = imagePath.size();
+                Collections.reverse(imagePath);
                 if(size < MaxData) {
                     for (int i = 0; i < size; i++) {
                         path.add(imagePath.get(0));
