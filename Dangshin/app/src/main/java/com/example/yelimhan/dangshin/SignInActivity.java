@@ -43,27 +43,6 @@ public class SignInActivity extends AppCompatActivity{
         db = FirebaseDatabase.getInstance();
         table = db.getReference("UserInfo");
 
-        // 이미 가입한 유저가 새로 로그인한 경우
-        Query query = table.orderByChild("u_googleId").equalTo(userID);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot child : dataSnapshot.getChildren()){
-                    Log.d("testt ","g id already signed in");
-                    Intent intent = new Intent(SignInActivity.this,MainActivity.class);
-                    startActivity(intent);
-                    overridePendingTransition(0,0);
-
-                    finish();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
         btnVol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
