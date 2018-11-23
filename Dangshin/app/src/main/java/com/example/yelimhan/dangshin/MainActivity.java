@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                             else if (ui.u_haveQuestion == 1)        // 시각장애인의 질문이 있는데 답변 없는 경우 -> ReQuesion?
                             {
                                 FirebaseDatabase.getInstance().getReference("QuestionInfo")
-                                        .orderByChild("q_writer").equalTo(userId)
+                                        .orderByKey().equalTo(ui.q_key)
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

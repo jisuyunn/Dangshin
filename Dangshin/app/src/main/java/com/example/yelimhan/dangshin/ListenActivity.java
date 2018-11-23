@@ -81,6 +81,9 @@ public class ListenActivity extends AppCompatActivity {
                         userReference = snapshot.getRef();
                         if(ui.u_position.equals("Volunteer")) {
                             setMediaPlayer();
+                        } else if(ui.u_position.equals("Blind")){
+                            userReference.child("q_key").setValue("");
+                            userReference.child("u_haveQuestion").setValue(0);
                         }
                         showAnswer(ui.u_position);
                     }
