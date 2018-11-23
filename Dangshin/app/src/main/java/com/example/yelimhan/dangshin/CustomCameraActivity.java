@@ -73,12 +73,15 @@ public class CustomCameraActivity extends Activity {
         preview.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                camera.autoFocus(new Camera.AutoFocusCallback(){
-                    @Override
-                    public void onAutoFocus(boolean arg0, Camera arg1) {
-                        //camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-                    }
-                });
+                if(camera != null){
+                    camera.autoFocus(new Camera.AutoFocusCallback(){
+                        @Override
+                        public void onAutoFocus(boolean arg0, Camera arg1) {
+                            //camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                        }
+                    });
+                }
+
             }
         });
 

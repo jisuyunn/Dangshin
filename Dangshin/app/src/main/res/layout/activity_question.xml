@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".QuestionActivity">
+    android:background="#f6f3ec"
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/logout"
@@ -14,13 +14,15 @@
         android:layout_height="wrap_content" />
 
     <TextView
+        android:textColor="#463b4f"
         android:id="@+id/textView"
+        android:fontFamily="@font/dxgpgb"
         android:lineSpacingExtra="8dp"
         android:gravity="center"
         android:layout_gravity="center"
         android:textSize="25dp"
-        android:layout_marginTop="50dp"
-        android:text="질문이 없네요\n위로 화면을 밀면\n바로 질문하실 수 있습니다!"
+        android:layout_marginTop="100dp"
+        android:text="등록된 질문이 없네요.\n위로 화면을 밀면\n바로 질문할 수 있어요."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -28,8 +30,8 @@
         android:layout_width="101dp"
         android:layout_height="83dp"
         android:layout_gravity="center"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="130dp"
         android:id="@+id/imageView"
-        android:src="@drawable/arrow_up" />
+        android:src="@drawable/arrow_up2" />
 
 </LinearLayout>

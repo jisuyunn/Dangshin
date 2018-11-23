@@ -51,11 +51,13 @@
         <activity android:name=".ReportActivity" />
         <activity android:name=".AnswerListActivity" />
         <activity android:name=".ListenActivity" />
-        <activity android:name=".MainActivity"><intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter></activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".SignInActivity" />
         <activity android:name=".QuestionListActivity" />
         <activity android:name=".RecordActivity"></activity>

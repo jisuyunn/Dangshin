@@ -26,10 +26,10 @@ public class QuestionAgainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
-        Toast.makeText(this, "  Blind - 새로질문하기 (QuestionActivity",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "  Blind - 재질문하기 (QuestionAgainActivity",Toast.LENGTH_SHORT).show();
         Intent intent = getIntent();
         questionInfo = (QuestionInfo)intent.getSerializableExtra("question");
-        TextView text = findViewById(R.id.text);
+        TextView text = findViewById(R.id.textView);
         text.setText("답변이 없네요\n 위로 화면을 밀면 \n새로운 질문을 하실 수 있습니다!");
     }
 

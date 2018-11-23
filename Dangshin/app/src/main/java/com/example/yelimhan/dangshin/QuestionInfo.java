@@ -13,17 +13,19 @@ public class QuestionInfo implements Serializable {
     public String q_pic;
     public String q_writer;
     public String q_voice;
+    public String q_stt;
     public boolean checkAnswer;
     public boolean checkUrgent;
 
     QuestionInfo() {
 
     }
-    public QuestionInfo(String id, String pic, String voice, String writer, boolean urgent) {
+    public QuestionInfo(String id, String pic, String voice, String writer, String stt, boolean urgent) {
         q_id = id;
         q_pic = pic;
         q_voice = voice;
         q_writer = writer;
+        q_stt = stt;
         checkUrgent = urgent;
         checkAnswer = false;
         long nowTime = System.currentTimeMillis();

@@ -55,7 +55,6 @@ public class UserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
-        TextView tv  = findViewById(R.id.tv1);
 
         // 파이어베이스 인증 객체 선언
         mAuth = FirebaseAuth.getInstance();
@@ -145,6 +144,7 @@ public class UserActivity extends AppCompatActivity {
                             Intent intent = new Intent(UserActivity.this,SignInActivity.class);
                             intent.putExtra("ID",user.getEmail());
                             startActivity(intent);
+                            overridePendingTransition(0,0);
                             UserActivity.this.finish();
 
                         } else {

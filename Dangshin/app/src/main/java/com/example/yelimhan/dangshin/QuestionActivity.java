@@ -1,5 +1,4 @@
-﻿package com.example.yelimhan.dangshin;
-
+package com.example.yelimhan.dangshin;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -96,6 +95,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     String mPath = "";
     Uri uri = null;
     private String storageVPath = "";
+    String userIndexId = "";
 
     public static final int RECORD_AUDIO = 0;
     public static final int CUSTOM_CAMERA = 1000;
@@ -109,6 +109,9 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         Toast.makeText(this, "  Blind - 질문하기 (QuestionActivity",Toast.LENGTH_SHORT).show();
         permissionCheck();
 
+        Intent it = getIntent();
+        userIndexId = it.getStringExtra("USERINDEX");
+        Log.d("testt", "QA userindexid : "+userIndexId);
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder
                 (GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -129,7 +132,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 if(status != android.speech.tts.TextToSpeech.ERROR){
                     tts.setLanguage(Locale.KOREAN);
                 }
-                String speach = "질문이 없네요\n\n위로 화면을 밀면 바로 질문하실 수 있습니다.";
+                String speach = "등록된 질문이 없네요. 위로 화면을 밀2면 바로 질문할 수 있어요.";
                 tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
 
                 if(status == TextToSpeech.SUCCESS) {
@@ -152,8 +155,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 }
             }
         });
-
         mRecorder = new MediaRecorder();
+
         // 로그아웃 버튼 클릭 이벤트 > dialog 예/아니오
         Button logout_btn_google = (Button) findViewById(id.logout);
         logout_btn_google.setOnClickListener(new View.OnClickListener() {
@@ -269,10 +272,22 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
                 stage = 2;
 
+
+                // 데이터베이스에 질문 추가
                 mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
                 String newQuestion = mDatabase.push().getKey();
-                QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, false);
+                QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt",false);
                 mDatabase.child(newQuestion).setValue(questionInfo);
+
+
+                // UserInfo
+                // haveQuestion -> 1
+                // q_key -> newQuestion
+                mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
+                mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
+                mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
+
+
             }
         }
 
@@ -298,8 +313,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 //                } //down to up swipe
                 if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 0) {
                     Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
-                    String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.\n\n3초뒤에 사진이 찍힙니다.\n3 2 1";
-                    textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.\n\n3초뒤에 사진이 찍힙니다.\n3 2 1");
+                    String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.";
+                    textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.");
                     imageView.setVisibility(View.INVISIBLE );
                     tts.setPitch(1.0f);
                     tts.setSpeechRate(1.0f);
@@ -308,7 +323,9 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     delayHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            goCamera();
+                            //goCamera();
+                            Intent intent = new Intent(QuestionActivity.this, CustomCameraActivity.class);
+                            startActivityForResult(intent, 2222);
                             stage = 1;
                         }
                     }, 9000);
@@ -474,6 +491,44 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 //            }
         }
 
+        // CustomCamera에서 돌아옴
+        if (requestCode == 2222 && resultCode == RESULT_OK){
+            String path = data.getStringExtra("PATH");
+            Log.d("testt", path);
+            filePath = Uri.fromFile(new File(path));
+            uploadPhotoFile(filePath);
+            String totalSpeak = "더 정확한 답변을 받기 위해 음성을 녹음할게요.\n\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면 화면을 길게 눌러주세요.\n3 2 1";
+            textView.setText("더 정확한 답변을 받기 위해\n음성을 녹음할게요.\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면\n화면을 길게 눌러주세요.\n3 2 1");
+            tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
+            final Handler delayHandler = new Handler();
+            delayHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(isRecording == false){
+                        if (ActivityCompat.checkSelfPermission(QuestionActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+                            ActivityCompat.requestPermissions(QuestionActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+                                    RECORD_AUDIO);
+                        }
+                    }
+                    initAudioRecorder();
+                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(QuestionActivity.this);
+                    //mRecognizer.setRecognitionListener(listener);
+                    //mRecognizer.startListening(intent);
+                    mRecognizer.setRecognitionListener(listener);
+                    mRecognizer.startListening(intent);
+                    mRecorder.start();
+                    //startActivityForResult(intent, RECORD_AUDIO);
+                    isRecording = true;
+                }
+            }, 12000);
+        }
+
+
+        // 기본 카메라앱에서 돌아옴
         if (requestCode == 1 && resultCode == RESULT_OK) {
             //filePath = Uri.parse(data.getStringExtra("PATH"));
             filePath = photoURI;
@@ -685,4 +740,5 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
         }
     };
+
 }

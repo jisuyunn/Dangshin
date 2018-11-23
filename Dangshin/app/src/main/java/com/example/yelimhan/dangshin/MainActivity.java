@@ -20,39 +20,14 @@ public class MainActivity extends AppCompatActivity {
 
     String userId = "";
     public boolean flag = true;
+    String userIndexId = "";
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("testt  ", "MA onResume");
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d("testt  ", "MA onStart");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        flag = false;
-        Log.d("testt  ", "MA onStop  :  "+String.valueOf(flag));
-
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.d("testt  ", "MA onRestart");
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.d("testt  ", "MA onCreate");
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -70,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        userIndexId = snapshot.getKey().toString();
                         UserInfo ui = snapshot.getValue(UserInfo.class);
 
                         if(ui.u_position.equals("Volunteer")){      // 접속한 사용자가 봉사자일 경우
@@ -92,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
                                 });
                             }
 
-
                             Intent it = new Intent(MainActivity.this,QuestionListActivity.class);
                             startActivity(it);
                             finish();
@@ -102,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
                             if(ui.u_haveQuestion == 0){             // 시각장애인의 질문이 없는 경우 -> QuestionActivity로
                                 Intent it = new Intent(MainActivity.this,QuestionActivity.class);
                                 it.putExtra("USERID",userId);
+                                it.putExtra("USERINDEX", userIndexId);
                                 startActivity(it);
                                 finish();
                             }
@@ -171,10 +147,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d("testt  ", "MA onPause");
-
-    }
 }
