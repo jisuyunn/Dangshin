@@ -47,8 +47,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
@@ -79,6 +83,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
     GestureDetector detector;
     String userId = "";
+    String userq_key = "";
     //사진
     Uri photoURI;
     private Uri filePath;
@@ -96,7 +101,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     String mPath = "";
     Uri uri = null;
     private String storageVPath = "";
-    String userIndexId = "";
+    public String userIndexId = "";
 
     public static final int RECORD_AUDIO = 0;
     public static final int CUSTOM_CAMERA = 1000;
@@ -192,7 +197,24 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
         userId = user.getEmail();
+
+//        Query query = table.orderByChild("u_googleId").equalTo(userId);
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                                 @Override
+//                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                                                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                                                         userIndexId = snapshot.getKey().toString();
+//                                                     }
+//                                                 }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
         detector = new GestureDetector(this, new GestureAdapter());
     }
@@ -298,6 +320,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 //                    Toast.makeText(getApplicationContext(), "Right Swipe", Toast.LENGTH_SHORT).show();
 //                } //down to up swipe
                 if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 0) {
+                    stage = 1;
                     Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
                     String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.";
                     textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.");
@@ -312,7 +335,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                             //goCamera();
                             Intent intent = new Intent(QuestionActivity.this, CustomCameraActivity.class);
                             startActivityForResult(intent, 2222);
-                            stage = 1;
                         }
                     }, 9000);
 
@@ -329,17 +351,20 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     String newQuestion = mDatabase.push().getKey();
                     QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
                     mDatabase.child(newQuestion).setValue(questionInfo);
-
+                    DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
+                    userR.child(userIndexId).child("q_key").setValue(newQuestion);
+                    userR.child(userIndexId).child("u_haveQuestion").setValue(1);
+                    Log.d("지금", userIndexId);
                     // UserInfo
                     // haveQuestion -> 1
                     // q_key -> newQuestion
-                    mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
-                    mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
-                    mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
+                    //mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
+                    //mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
+                    //mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
                     Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
-                    textView.setText("긴급 질문 등록이 완료되었습니다.\n답변이 오면 알려드릴게요!");
+                    textView.setText("긴급 질문 등록이\n완료되었습니다.\n\n답변이 오면 알려드릴게요!");
                     String speech = "긴급 질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
                     tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
                     stage = 3;
@@ -350,14 +375,16 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     String newQuestion = mDatabase.push().getKey();
                     QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
                     mDatabase.child(newQuestion).setValue(questionInfo);
-
+                    DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
+                    userR.child(userIndexId).child("q_key").setValue(newQuestion);
+                    userR.child(userIndexId).child("u_haveQuestion").setValue(1);
 
                     // UserInfo
                     // haveQuestion -> 1
                     // q_key -> newQuestion
-                    mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
-                    mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
-                    mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
+                    //mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
+                    //mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
+                    //mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
 
                 }
             } catch (Exception ex) {
