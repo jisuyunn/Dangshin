@@ -100,6 +100,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
     public static final int RECORD_AUDIO = 0;
     public static final int CUSTOM_CAMERA = 1000;
+    private boolean urgent_flag = false;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -268,27 +269,11 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 mRecognizer.stopListening();
                 isRecording = false;
                 uploadVoiceFile();
-                textView.setText("질문 등록이 완료되었습니다.\n답변이 오면 알려드릴게요!");
-                String speech = "질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
-                tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+
                 stage = 2;
-
-
-                // 데이터베이스에 질문 추가
-                mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-                String newQuestion = mDatabase.push().getKey();
-                QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt",false);
-                mDatabase.child(newQuestion).setValue(questionInfo);
-
-
-                // UserInfo
-                // haveQuestion -> 1
-                // q_key -> newQuestion
-                mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
-                mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
-                mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
-
-
+                textView.setText("질문이 긴급하신가요?\n 그렇다면 화면을 아래에서로\n위로 올려주세요.\n\n긴급이 아니라면 화면을\n위에서 아래로 내려주세요.");
+                String speech = "질문이 긴급하신가요?\n 그렇다면 화면을 아래에서 위로 올려주세요\n\n긴급이 아니라면 화면을 위에서 아래로 내려주세요";
+                tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
             }
         }
 
@@ -332,8 +317,48 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     }, 9000);
 
                 } // up to down swipe
-                else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && stage == 2) {
+                    textView.setText("질문 등록이 완료되었습니다.\n답변이 오면 알려드릴게요!");
+                    String speech = "질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
+                    tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+                    stage = 3;
+                    urgent_flag = false;
+
+                    // 데이터베이스에 질문 추가
+                    mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
+                    String newQuestion = mDatabase.push().getKey();
+                    QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
+                    mDatabase.child(newQuestion).setValue(questionInfo);
+
+                    // UserInfo
+                    // haveQuestion -> 1
+                    // q_key -> newQuestion
+                    mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
+                    mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
+                    mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
+                }
+                else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
                     Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
+                    textView.setText("긴급 질문 등록이 완료되었습니다.\n답변이 오면 알려드릴게요!");
+                    String speech = "긴급 질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
+                    tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+                    stage = 3;
+                    urgent_flag = true;
+
+                    // 데이터베이스에 질문 추가
+                    mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
+                    String newQuestion = mDatabase.push().getKey();
+                    QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
+                    mDatabase.child(newQuestion).setValue(questionInfo);
+
+
+                    // UserInfo
+                    // haveQuestion -> 1
+                    // q_key -> newQuestion
+                    mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
+                    mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
+                    mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
+
                 }
             } catch (Exception ex) {
                 Log.d("swipe", ex.toString());
