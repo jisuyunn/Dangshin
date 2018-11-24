@@ -31,7 +31,7 @@
         android:textSize="25dp" />
 
     <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/g"
+        android:id="@+id/imageView"
         android:layout_width="101dp"
         android:layout_height="83dp"
         android:layout_marginTop="150sp"

@@ -47,12 +47,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
@@ -104,7 +100,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     public static final int RECORD_AUDIO = 0;
     public static final int CUSTOM_CAMERA = 1000;
     private boolean urgent_flag = false;
-    private boolean question_flag = false;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -117,7 +112,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
         Intent it = getIntent();
         userIndexId = it.getStringExtra("USERINDEX");
-        question_flag = it.getBooleanExtra("QUESTION", false); //
         Log.d("testt", "QA userindexid : "+userIndexId);
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder
@@ -133,21 +127,17 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         textView = findViewById(id.textView);
         imageView = findViewById(id.imageView);
         stage = 0;
-        tts = new TextToSpeech(QuestionActivity.this, new TextToSpeech.OnInitListener(){
+
+        tts = new TextToSpeech(QuestionActivity.this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if(status != android.speech.tts.TextToSpeech.ERROR){
+                if(status != android.speech.tts.TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.KOREAN);
                 }
 
-                if(!question_flag) {
-                    String speach = "등록된 질문이 없네요. 위로 화면을 밀면 바로 질문할 수 있어요.";
-                    tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
-                }else{
-                    String speach = "답변이 없네요\n 위로 화면을 밀면 새로운 질문을 하실 수 있습니다!";
-                    textView.setText("답변이 없네요\n위로 화면을 밀면\n새로운 질문을 하실 수 있습니다!");
-                    tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
-                }
+                String speach = "등록된 질문이 없네요. 위로 화면을 밀면 바로 질문할 수 있어요.";
+                tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
+
                 if(status == TextToSpeech.SUCCESS) {
                     tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
@@ -168,6 +158,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 }
             }
         });
+
+
         mRecorder = new MediaRecorder();
 
         // 로그아웃 버튼 클릭 이벤트 > dialog 예/아니오
@@ -314,7 +306,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
                     String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.";
                     textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.");
-                    imageView.setVisibility(View.INVISIBLE );
+                    imageView.setVisibility(View.INVISIBLE);
                     tts.setPitch(1.0f);
                     tts.setSpeechRate(1.0f);
                     tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
@@ -322,7 +314,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     delayHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            //goCamera();
+                            goCamera();
                             Intent intent = new Intent(QuestionActivity.this, CustomCameraActivity.class);
                             startActivityForResult(intent, 2222);
                         }

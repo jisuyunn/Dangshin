@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
                                 Intent it = new Intent(MainActivity.this,QuestionActivity.class);
                                 it.putExtra("USERID",userId);
                                 it.putExtra("USERINDEX", userIndexId);
-                                it.putExtra("ISQUESTION", false);
                                 startActivity(it);
                                 finish();
                             }
@@ -93,10 +92,10 @@ public class MainActivity extends AppCompatActivity {
                                                     QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
                                                     Intent it = new Intent(MainActivity.this,QuestionAgainActivity.class);
                                                     //Intent it = new Intent(MainActivity.this, QuestionActivity.class);
-                                                    Bundle bundle = new Bundle();
-                                                    bundle.putSerializable("question",questionInfo);
-                                                    it.putExtras(bundle);
-                                                    it.putExtra("ISQUESTION", true);
+                                                    //Bundle bundle = new Bundle();
+                                                    //bundle.putSerializable("question",questionInfo);
+                                                    //it.putExtras(bundle);
+                                                    it.putExtra("VOICE", questionInfo.q_voice);
                                                     it.putExtra("USERID",userId);
                                                     it.putExtra("USERINDEX", userIndexId);
                                                     startActivity(it);
