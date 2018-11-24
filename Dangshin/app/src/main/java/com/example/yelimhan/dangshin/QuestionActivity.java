@@ -87,7 +87,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     private Uri filePath;
     private String imgPath = "";
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO};
     private int stage;
     private String storagePath = "";
     //tts, stt
@@ -345,12 +345,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
                     Log.d("지금", userIndexId);
-                    // UserInfo
-                    // haveQuestion -> 1
-                    // q_key -> newQuestion
-                    //mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
-                    //mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
-                    //mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
+
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
                     Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
@@ -368,18 +363,9 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
-
-                    // UserInfo
-                    // haveQuestion -> 1
-                    // q_key -> newQuestion
-                    //mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
-                    //mDatabase.child(userIndexId).child("u_haveQuestion").setValue(1);
-                    //mDatabase.child(userIndexId).child("q_key").setValue(newQuestion);
-
                 }
             } catch (Exception ex) {
                 Log.d("swipe", ex.toString());
-
             }
 
             return true;
@@ -424,16 +410,19 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         //권한이 부여되어 있는지 확인
         int cameraPermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         int writePermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int recordPermissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
 
         if(cameraPermissionCheck == PackageManager.PERMISSION_GRANTED
-                && writePermissionCheck == PackageManager.PERMISSION_GRANTED){
+                && writePermissionCheck == PackageManager.PERMISSION_GRANTED
+                && recordPermissionCheck == PackageManager.PERMISSION_GRANTED){
             Toast.makeText(getApplicationContext(), "권한 있음", Toast.LENGTH_SHORT).show();
         }else{
             Toast.makeText(getApplicationContext(), "권한 없음", Toast.LENGTH_SHORT).show();
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
-                    || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])) {
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])
+                     ||  ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[2])) {
 
-                Toast.makeText(getApplicationContext(), "카메라와 저장공간 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "카메라, 음성녹음, 저장공간 권한이 필요합니다", Toast.LENGTH_SHORT).show();
                 ActivityCompat.requestPermissions( QuestionActivity.this, REQUIRED_PERMISSIONS,1000);
             }else{
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, 1000);
@@ -444,7 +433,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 //거부하더라도 false를 반환하여, 직접 사용자가 권한을 부여하지 않는 이상, 권한을 요청할 수 없게 된다.
                 if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
                     //이곳에 권한이 왜 필요한지 설명하는 Toast나 dialog를 띄워준 후, 다시 권한을 요청한다.
-                    Toast.makeText(getApplicationContext(), "카메라와 저장공간 권한이 필요합니다", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "카메라, 음성녹음, 저장공간 권한이 필요합니다", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -469,7 +458,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             else {
 
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
-                        || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])) {
+                        || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])
+                        || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[2]) ) {
 
                     Toast.makeText(this, "퍼미션이 거부되었습니다.",Toast.LENGTH_SHORT).show();
                     finish();
@@ -547,13 +537,13 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             delayHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(isRecording == false){
-                        if (ActivityCompat.checkSelfPermission(QuestionActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-                            ActivityCompat.requestPermissions(QuestionActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                    RECORD_AUDIO);
-                        }
-                    }
+//                    if(isRecording == false){
+//                        if (ActivityCompat.checkSelfPermission(QuestionActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+//
+//                            ActivityCompat.requestPermissions(QuestionActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
+//                                    RECORD_AUDIO);
+//                        }
+//                    }
                     initAudioRecorder();
 //                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 //                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_format_list_bulleted_black_24dp"
+    <item android:drawable="@drawable/menu_options"
         android:state_pressed="false">
     </item>
     <item android:drawable="@drawable/ic_format_list_bulleted_white_24dp"

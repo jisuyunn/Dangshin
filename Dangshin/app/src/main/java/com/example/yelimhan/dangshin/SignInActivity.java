@@ -33,8 +33,9 @@ public class SignInActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        btnBlind = (Button)findViewById(R.id.btnBlind);
-        btnVol = (Button)findViewById(R.id.btnVolunteer);
+
+        Button btnVol = (Button)findViewById(R.id.btnVolunteer);
+        Button btnBlind = (Button)findViewById(R.id.btnBlind);
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         userID = user.getEmail();

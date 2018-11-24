@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F00</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorSeekbar">#AAAAAA</color>
+<color name="colorPrimary">#3F51B5</color>
+<color name="colorPrimaryDark">#e2b4ea</color>
+<color name="colorAccent">#FF4081</color>
+<color name="colorSeekbar">#AAAAAA</color>
+    <color name="spring3">#e1bfe0</color>
+    <color name="spring2">#e8cfe4</color>
+    <color name="spring1">#f6f3ec</color>
+
+
 </resources>

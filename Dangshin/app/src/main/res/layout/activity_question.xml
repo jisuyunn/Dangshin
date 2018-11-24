@@ -5,33 +5,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#f6f3ec"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <Button
         android:id="@+id/logout"
-        android:text="logout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:background="#00ff0000"
+        android:text="로그아웃"
+        android:textColor="#33000000" />
 
     <TextView
-        android:textColor="#463b4f"
         android:id="@+id/textView"
-        android:fontFamily="@font/dxgpgb"
-        android:lineSpacingExtra="8dp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:textSize="25dp"
-        android:layout_marginTop="100dp"
-        android:text="등록된 질문이 없네요.\n위로 화면을 밀면\n바로 질문할 수 있어요."
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="100sp"
+        android:fontFamily="@font/dxgpgb"
+        android:gravity="center"
+        android:lineSpacingExtra="8dp"
+        android:text="등록된 질문이 없네요.\n위로 화면을 밀면\n바로 질문할 수 있어요."
+        android:textColor="#463b4f"
+        android:textSize="25dp" />
 
     <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/g"
         android:layout_width="101dp"
         android:layout_height="83dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="130dp"
-        android:id="@+id/imageView"
+        android:layout_marginTop="150sp"
         android:src="@drawable/arrow_up2" />
 
 </LinearLayout>

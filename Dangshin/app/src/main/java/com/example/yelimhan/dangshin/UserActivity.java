@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +52,7 @@ public class UserActivity extends AppCompatActivity {
     private DatabaseReference UserDatabase;
 
     private String userId;  // 유저의 ID
-
+    int i = 0;
 
 
 
@@ -83,11 +84,13 @@ public class UserActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // Set the dimensions of the sign-in button.
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        ImageButton signInButton = findViewById(R.id.sign_in_btn);
+        //ImageButton.setSize(SignInButton.SIZE_STANDARD);
+
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 signIn();
             }
         });
