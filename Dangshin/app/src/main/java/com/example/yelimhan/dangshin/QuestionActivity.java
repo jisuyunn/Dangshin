@@ -554,7 +554,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                                     RECORD_AUDIO);
                         }
                     }
-//                    initAudioRecorder();
+                    initAudioRecorder();
 //                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 //                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
 //                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
