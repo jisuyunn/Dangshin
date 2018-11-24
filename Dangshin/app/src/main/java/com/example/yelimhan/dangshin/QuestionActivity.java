@@ -79,8 +79,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     public TextView textView;
     public ImageView imageView;
     private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_OFF_PATH = 500;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
     GestureDetector detector;
     String userId = "";
     String userq_key = "";
@@ -106,6 +104,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     public static final int RECORD_AUDIO = 0;
     public static final int CUSTOM_CAMERA = 1000;
     private boolean urgent_flag = false;
+    private boolean question_flag = false;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -118,6 +117,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
         Intent it = getIntent();
         userIndexId = it.getStringExtra("USERINDEX");
+        question_flag = it.getBooleanExtra("QUESTION", false); //
         Log.d("testt", "QA userindexid : "+userIndexId);
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder
@@ -139,9 +139,15 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 if(status != android.speech.tts.TextToSpeech.ERROR){
                     tts.setLanguage(Locale.KOREAN);
                 }
-                String speach = "등록된 질문이 없네요. 위로 화면을 밀2면 바로 질문할 수 있어요.";
-                tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
 
+                if(!question_flag) {
+                    String speach = "등록된 질문이 없네요. 위로 화면을 밀면 바로 질문할 수 있어요.";
+                    tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
+                }else{
+                    String speach = "답변이 없네요\n 위로 화면을 밀면 새로운 질문을 하실 수 있습니다!";
+                    textView.setText("답변이 없네요\n위로 화면을 밀면\n새로운 질문을 하실 수 있습니다!");
+                    tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
+                }
                 if(status == TextToSpeech.SUCCESS) {
                     tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
@@ -199,22 +205,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
         userId = user.getEmail();
-
-//        Query query = table.orderByChild("u_googleId").equalTo(userId);
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//                                                 @Override
-//                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                                                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                                                         userIndexId = snapshot.getKey().toString();
-//                                                     }
-//                                                 }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
 
         detector = new GestureDetector(this, new GestureAdapter());
     }
@@ -288,7 +278,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         public void onLongPress(MotionEvent e) {
             if(stage == 1){
                 mRecorder.stop();
-                mRecognizer.stopListening();
+                //mRecognizer.stopListening();
                 isRecording = false;
                 uploadVoiceFile();
 
@@ -564,15 +554,13 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                                     RECORD_AUDIO);
                         }
                     }
-                    initAudioRecorder();
-                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
-                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(QuestionActivity.this);
-                    //mRecognizer.setRecognitionListener(listener);
-                    //mRecognizer.startListening(intent);
-                    mRecognizer.setRecognitionListener(listener);
-                    mRecognizer.startListening(intent);
+//                    initAudioRecorder();
+//                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+//                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+//                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+//                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(QuestionActivity.this);
+//                    mRecognizer.setRecognitionListener(listener);
+//                    mRecognizer.startListening(intent);
                     mRecorder.start();
                     //startActivityForResult(intent, RECORD_AUDIO);
                     isRecording = true;
@@ -608,8 +596,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     //mRecognizer.setRecognitionListener(listener);
                     //mRecognizer.startListening(intent);
                     mRecognizer.setRecognitionListener(listener);
+                    //mRecorder.start();
                     mRecognizer.startListening(intent);
-                    mRecorder.start();
                     //startActivityForResult(intent, RECORD_AUDIO);
                     isRecording = true;
                 }
@@ -770,7 +758,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         @Override
         public void onError(int error) {
             Toast.makeText(QuestionActivity.this, String.valueOf(error), Toast.LENGTH_SHORT).show();
-        }
+            }
 
         @Override
         public void onResults(Bundle results) {
@@ -780,6 +768,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
             String[] rs = new String[mResult.size()];
             mResult.toArray(rs);
+
             Toast.makeText(QuestionActivity.this, rs[0], Toast.LENGTH_SHORT).show();
         }
 

@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                                 Intent it = new Intent(MainActivity.this,QuestionActivity.class);
                                 it.putExtra("USERID",userId);
                                 it.putExtra("USERINDEX", userIndexId);
+                                it.putExtra("ISQUESTION", false);
                                 startActivity(it);
                                 finish();
                             }
@@ -90,11 +91,14 @@ public class MainActivity extends AppCompatActivity {
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                                     QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
-                                                    //Intent it = new Intent(MainActivity.this,QuestionAgainActivity.class);
-                                                    Intent it = new Intent(MainActivity.this, QuestionActivity.class);
+                                                    Intent it = new Intent(MainActivity.this,QuestionAgainActivity.class);
+                                                    //Intent it = new Intent(MainActivity.this, QuestionActivity.class);
                                                     Bundle bundle = new Bundle();
                                                     bundle.putSerializable("question",questionInfo);
                                                     it.putExtras(bundle);
+                                                    it.putExtra("ISQUESTION", true);
+                                                    it.putExtra("USERID",userId);
+                                                    it.putExtra("USERINDEX", userIndexId);
                                                     startActivity(it);
                                                     finish();
                                                 }
