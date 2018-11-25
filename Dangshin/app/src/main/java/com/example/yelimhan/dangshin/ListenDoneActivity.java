@@ -1,27 +1,29 @@
 
 package com.example.yelimhan.dangshin;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,13 +40,10 @@ import java.util.HashMap;
 import java.util.Locale;
 
 // 질문에 대한 답변 확인 (Blind)
-public class ListenActivity extends AppCompatActivity {
+public class ListenDoneActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
     private QuestionInfo questionInfo;
-    private ImageView imageView;
-    private TextView questionText;
-    private TextView answerText;
     private StorageReference storageReference = FirebaseStorage.getInstance("gs://dangshin-fa136.appspot.com").getReference();
     private TextToSpeech tts;
     private DatabaseReference userReference;
@@ -56,21 +55,22 @@ public class ListenActivity extends AppCompatActivity {
     private String utteranceId;
     private String userId;
     private SeekBar seekBar;
+    private static final int SWIPE_MIN_DISTANCE = 120;
+    GestureDetector detector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_listen);
+        setContentView(R.layout.activity_listen_done);
         Intent intent = getIntent();
         questionInfo = (QuestionInfo)intent.getSerializableExtra("question");
-        imageView = findViewById(R.id.answerimage2);
-        answerText = findViewById(R.id.answertext2);
 
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         userId = user.getEmail();
         // firebase database 참조 객체
         DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
+        detector = new GestureDetector(this, new ListenDoneActivity.GestureAdapter());
         if(user != null) {
             Query query = table.orderByChild("u_googleId").equalTo(userId);
             query.addListenerForSingleValueEvent(new ValueEventListener() {       // 역할 알아오기
@@ -82,10 +82,10 @@ public class ListenActivity extends AppCompatActivity {
                         if(ui.u_position.equals("Volunteer")) {
                             setMediaPlayer();
                         } else if(ui.u_position.equals("Blind")){
-                            userReference.child("q_key").setValue("");
-                            userReference.child("u_haveQuestion").setValue(0);
+                            //userReference.child("q_key").setValue("");
+                            //userReference.child("u_haveQuestion").setValue(2); /////////////////////////////////////////////////////////////////
                         }
-                        showAnswer(ui.u_position);
+                        //showAnswer(ui.u_position);
                     }
                 }
                 @Override
@@ -93,6 +93,8 @@ public class ListenActivity extends AppCompatActivity {
                 }
             });
         }
+
+        setMediaPlayer();
     }
 
     // 재생 관련 함수
@@ -118,7 +120,47 @@ public class ListenActivity extends AppCompatActivity {
                 seekBar.setMax(mediaPlayer.getDuration());
                 seekBar.setProgress(0);
                 isPrepared = true;
-                findViewById(R.id.recordlinear).setVisibility(View.VISIBLE);
+                //findViewById(R.id.recordlinear).setVisibility(View.VISIBLE);
+                mp.start();
+                int duration = mp.getDuration();
+                final Handler delayHandler = new Handler();
+                delayHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tts = new TextToSpeech(ListenDoneActivity.this, new TextToSpeech.OnInitListener() {
+                            @Override
+                            public void onInit(int status) {
+                                if(status != android.speech.tts.TextToSpeech.ERROR) {
+                                    tts.setLanguage(Locale.KOREAN);
+                                }
+
+                                String speach = "질문에 답이 달렸어요!";
+                                tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
+                                showAnswer("Blind");
+                                texttospeechs();
+
+                                if(status == TextToSpeech.SUCCESS) {
+                                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                                        @Override
+                                        public void onStart(String utteranceId) {
+
+                                        }
+
+                                        @Override
+                                        public void onDone(String Id) {
+                                            ttsGreater21("다시 들으시려면 화면을 위로 밀어주세요! 새로 질문하시려면 화면을 아래로 밀어주세요.");
+                                        }
+
+                                        @Override
+                                        public void onError(String utteranceId) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }, duration);
             }
         });
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -187,19 +229,16 @@ public class ListenActivity extends AppCompatActivity {
         });
     }
 
-
     private void showAnswer(final String u_position) {
         if (u_position.equals("Volunteer")) {      // 봉사자라면
-            GlideApp.with(this)
-                    .load(storageReference.child(questionInfo.q_pic))
-                    .override(500, 300)
-                    .into(imageView);
-            questionText = findViewById(R.id.questiontext2);
+//            GlideApp.with(this)
+//                    .load(storageReference.child(questionInfo.q_pic))
+//                    .override(500, 300)
+//                    .into(imageView);
             // STT
-            questionText.setText("음성녹음 STT한 질문글");
+            //questionText.setText("음성녹음 STT한 질문글");
         } else if(u_position.equals("Blind")) {        // 시각 장애인 이라면
-            findViewById(R.id.recordlinear).setVisibility(View.GONE);
-            imageView.setVisibility(View.GONE);
+            //findViewById(R.id.recordlinear).setVisibility(View.GONE);
         }
         mDatabase = FirebaseDatabase.getInstance().getReference("AnswerInfo");
         mDatabase.orderByChild("q_id").equalTo(questionInfo.q_id).addValueEventListener(new ValueEventListener() {
@@ -207,7 +246,7 @@ public class ListenActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     text = snapshot.child("answer").getValue().toString();
-                    answerText.setText(text);
+                    //answerText.setText(text);
                     if (u_position.equals("Blind")) {    // 시각 장애인 이라면
                         texttospeechs();
                     }
@@ -245,7 +284,7 @@ public class ListenActivity extends AppCompatActivity {
                         @Override
                         public void onDone(String Id) {
                             if(Id.equals(utteranceId)) {
-                                ttsGreater21("다시 들으시려면 화면을 위로 밀어주세요!");
+                                ttsGreater21("다시 들으시려면 화면을 위로 밀어주세요! 새로 질문하시려면 화면을 아래로 밀어주세요.");
                                 utteranceId = "";
                             }
                         }
@@ -299,22 +338,25 @@ public class ListenActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                curpos = event.getY();
-                break;
-            case MotionEvent.ACTION_UP: {
-                float diff = event.getY() - curpos;
-                if(diff < -300) {
-                    texttospeechs();
-                }
-                break;
-            }
-        }
-        return super.onTouchEvent(event);
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                curpos = event.getY();
+//                Intent intent = new Intent(ListenDoneActivity.this, QuestionActivity.class);
+//                startActivity(intent);
+//                finish();
+//                break;
+//            case MotionEvent.ACTION_UP: {
+//                float diff = event.getY() - curpos;
+//                if(diff < -300) {
+//                    texttospeechs();
+//                }
+//                break;
+//            }
+//        }
+//        return super.onTouchEvent(event);
+//    }
 
     public class PlayRecord extends Thread {
         @Override
@@ -330,4 +372,62 @@ public class ListenActivity extends AppCompatActivity {
 
         }
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        detector.onTouchEvent(event);
+        return true;
+    }
+
+    class GestureAdapter implements GestureDetector.OnGestureListener{
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+        }
+
+        @SuppressLint("WrongConstant")
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                double distanceX = Math.abs(e1.getX() - e2.getY());
+                double distanceY = Math.abs(e1.getY() - e2.getY());
+
+                if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE) {
+                    texttospeechs();
+                } // up to down swipe
+                else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE) {
+                    Intent intent = new Intent(ListenDoneActivity.this, QuestionActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            } catch (Exception ex) {
+                Log.d("swipe", ex.toString());
+            }
+
+            return true;
+        }
+
+    }
+
 }

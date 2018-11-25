@@ -35,6 +35,7 @@ import android.view.GestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,6 +79,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
     public Button bt;
     public TextView textView;
     public ImageView imageView;
+    public LinearLayout question_layout;
     private static final int SWIPE_MIN_DISTANCE = 120;
     GestureDetector detector;
     String userId = "";
@@ -100,9 +102,11 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
     private String storageVPath = "";
     public String userIndexId = "";
     public String voice_file = "";
-    private MediaPlayer mediaPlayer = null;
+    private MediaPlayer mediaPlayer = new MediaPlayer();
     private boolean isPrepared = false;
     private boolean isPlaying = false;
+    private SeekBar seekBar;
+    private int duration = 0;
 
     public static final int RECORD_AUDIO = 0;
     public static final int CUSTOM_CAMERA = 1000;
@@ -131,45 +135,17 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                 .enableAutoManage(this, this )
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        bt = (Button) findViewById(id.logout);
+        bt = findViewById(id.logout);
         textView = findViewById(id.textView);
         imageView = findViewById(id.imageView);
+        question_layout = findViewById(id.question_layout);
         stage = 0;
 
         setMediaPlayer();
-        mediaPlayer.start();
+        //mediaPlayer.start();
+        textView.setText("질문에 대한 답변이 아직 없습니다.\n\n화면을 아래에서 위로 올리면\n다시 질문할 수 있어요!");
 
-        tts = new TextToSpeech(QuestionAgainActivity.this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status != android.speech.tts.TextToSpeech.ERROR) {
-                    tts.setLanguage(Locale.KOREAN);
-                }
 
-                String speach = "에 대한 답변이 아직 없습니다. 화면을 아래에서 위로 올리면 다시 질문할 수 있어요!";
-                tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
-                textView.setText("질문에 대한 답변이 아직 없습니다.\n\n화면을 아래에서 위로 올리면\n다시 질문할 수 있어요!");
-
-                if(status == TextToSpeech.SUCCESS) {
-                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                        @Override
-                        public void onStart(String utteranceId) {
-
-                        }
-
-                        @Override
-                        public void onDone(String Id) {
-
-                        }
-
-                        @Override
-                        public void onError(String utteranceId) {
-
-                        }
-                    });
-                }
-            }
-        });
 
 
         mRecorder = new MediaRecorder();
@@ -287,6 +263,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                 uploadVoiceFile();
 
                 stage = 2;
+                question_layout.setBackgroundResource(R.drawable.gradient5);
                 textView.setText("질문이 긴급하신가요?\n 그렇다면 화면을 아래에서로\n위로 올려주세요.\n\n긴급이 아니라면 화면을\n위에서 아래로 내려주세요.");
                 String speech = "질문이 긴급하신가요?\n 그렇다면 화면을 아래에서 위로 올려주세요\n\n긴급이 아니라면 화면을 위에서 아래로 내려주세요";
                 tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
@@ -316,6 +293,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                 if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 0) {
                     stage = 1;
                     Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
+                    question_layout.setBackgroundResource(drawable.gradient2);
                     String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.";
                     textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.");
                     imageView.setVisibility(View.INVISIBLE );
@@ -326,7 +304,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                     delayHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            goCamera();
+                            //goCamera();
                             Intent intent = new Intent(QuestionAgainActivity.this, CustomCameraActivity.class);
                             startActivityForResult(intent, 2222);
                         }
@@ -334,6 +312,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
                 } // up to down swipe
                 else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && stage == 2) {
+                    question_layout.setBackgroundColor(Color.rgb(225, 191, 224));
                     textView.setText("질문 등록이 완료되었습니다.\n답변이 오면 알려드릴게요!");
                     String speech = "질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
                     tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
@@ -353,6 +332,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
                     Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
+                    question_layout.setBackgroundColor(Color.rgb(225, 191, 224));
                     textView.setText("긴급 질문 등록이\n완료되었습니다.\n\n답변이 오면 알려드릴게요!");
                     String speech = "긴급 질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
                     tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
@@ -534,6 +514,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
             Log.d("testt", path);
             filePath = Uri.fromFile(new File(path));
             uploadPhotoFile(filePath);
+            question_layout.setBackgroundResource(R.drawable.gradient4);
             String totalSpeak = "더 정확한 답변을 받기 위해 음성을 녹음할게요.\n\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면 화면을 길게 눌러주세요.\n3 2 1";
             textView.setText("더 정확한 답변을 받기 위해\n음성을 녹음할게요.\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면\n화면을 길게 눌러주세요.\n3 2 1");
             tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
@@ -778,21 +759,139 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
     };
 
     public void setMediaPlayer() {
-        //final Button playbutton = findViewById(R.id.playbutton);
-        //final SeekBar seekBar = findViewById(R.id.seekbar);
+        final Button playbutton = findViewById(R.id.playbutton);
+        seekBar = findViewById(R.id.seekbar);
 
         // 음성 파일 재생
         storageReference.child(voice_file).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 try {
-                    mediaPlayer = new MediaPlayer();
-                    mediaPlayer.setDataSource(getApplicationContext(), uri);
+                    mediaPlayer.setDataSource(String.valueOf(uri));
                     mediaPlayer.prepare();
+                    Log.d("file path : ", voice_file);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                seekBar.setMax(mediaPlayer.getDuration());
+                seekBar.setProgress(0);
+                isPrepared = true;
+                findViewById(R.id.recordlinear).setVisibility(View.VISIBLE);
+                new QuestionAgainActivity.PlayRecord().start();
+                mp.start();
+                duration = mp.getDuration();
+                Log.d("time", String.valueOf(mp.getDuration()));
+
+                final Handler delayHandler = new Handler();
+                delayHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        tts = new TextToSpeech(QuestionAgainActivity.this, new TextToSpeech.OnInitListener() {
+                            @Override
+                            public void onInit(int status) {
+                                if(status != android.speech.tts.TextToSpeech.ERROR) {
+                                    tts.setLanguage(Locale.KOREAN);
+                                }
+
+                                String speach = "에 대한 답변이 아직 없습니다. 화면을 아래에서 위로 올리면 다시 질문할 수 있어요!";
+                                tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
+
+                                if(status == TextToSpeech.SUCCESS) {
+                                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                                        @Override
+                                        public void onStart(String utteranceId) {
+
+                                        }
+
+                                        @Override
+                                        public void onDone(String Id) {
+
+                                        }
+
+                                        @Override
+                                        public void onError(String utteranceId) {
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }, duration);
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if(isPrepared) {
+                    isPlaying = false;
+                    mediaPlayer.seekTo(0);
+                    seekBar.setProgress(0);
+                    playbutton.setSelected(false);
+                }
+            }
+        });
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                if(isPrepared && isPlaying) {
+                    isPlaying = false;
+                    mediaPlayer.pause();
+                    playbutton.setSelected(false);
+                }
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if(isPrepared) {
+                    mediaPlayer.seekTo(seekBar.getProgress());
+                    if (seekBar.getProgress() == seekBar.getMax()) {
+                        isPlaying = false;
+                        playbutton.setSelected(false);
+                    }
+                }
+            }
+        });
+        playbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isPrepared) {
+                    if (isPlaying) {
+                        isPlaying = false;
+                        mediaPlayer.pause();
+                        v.setSelected(false);
+                    } else {
+                        isPlaying = true;
+                        new QuestionAgainActivity.PlayRecord().start();
+                        mediaPlayer.start();
+                        v.setSelected(true);
+                    }
+                }
+            }
+        });
+    }
+
+    public class PlayRecord extends Thread {
+        @Override
+        public void run() {
+            try {   // 시작할 때 버퍼링 임시 해결
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            while(isPlaying&&isPrepared) {
+                seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            }
+
+        }
     }
 }

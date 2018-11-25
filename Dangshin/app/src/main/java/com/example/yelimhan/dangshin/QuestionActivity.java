@@ -27,6 +27,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -34,6 +35,7 @@ import android.view.GestureDetector;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +65,8 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.example.yelimhan.dangshin.R.*;
+import static com.example.yelimhan.dangshin.R.drawable.*;
+import static com.example.yelimhan.dangshin.R.id.question_layout;
 
 
 // 질문하기 (Blind)
@@ -74,6 +78,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     public Button bt;
     public TextView textView;
     public ImageView imageView;
+    public LinearLayout question_layout;
     private static final int SWIPE_MIN_DISTANCE = 120;
     GestureDetector detector;
     String userId = "";
@@ -126,6 +131,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         bt = (Button) findViewById(id.logout);
         textView = findViewById(id.textView);
         imageView = findViewById(id.imageView);
+        question_layout = findViewById(id.question_layout);
         stage = 0;
 
         tts = new TextToSpeech(QuestionActivity.this, new TextToSpeech.OnInitListener() {
@@ -275,6 +281,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 uploadVoiceFile();
 
                 stage = 2;
+                question_layout.setBackgroundResource(R.drawable.gradient5);
                 textView.setText("질문이 긴급하신가요?\n 그렇다면 화면을 아래에서로\n위로 올려주세요.\n\n긴급이 아니라면 화면을\n위에서 아래로 내려주세요.");
                 String speech = "질문이 긴급하신가요?\n 그렇다면 화면을 아래에서 위로 올려주세요\n\n긴급이 아니라면 화면을 위에서 아래로 내려주세요";
                 tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
@@ -304,6 +311,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 0) {
                     stage = 1;
                     Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
+                    question_layout.setBackgroundResource(R.drawable.gradient2);
                     String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.";
                     textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.");
                     imageView.setVisibility(View.INVISIBLE);
@@ -314,7 +322,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     delayHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            goCamera();
+                            //goCamera();
                             Intent intent = new Intent(QuestionActivity.this, CustomCameraActivity.class);
                             startActivityForResult(intent, 2222);
                         }
@@ -322,6 +330,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
                 } // up to down swipe
                 else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && stage == 2) {
+                    question_layout.setBackgroundColor(Color.rgb(225, 191, 224));
                     textView.setText("질문 등록이 완료되었습니다.\n답변이 오면 알려드릴게요!");
                     String speech = "질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
                     tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
@@ -341,6 +350,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
                     Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
+                    question_layout.setBackgroundColor(Color.rgb(225, 191, 224));
                     textView.setText("긴급 질문 등록이\n완료되었습니다.\n\n답변이 오면 알려드릴게요!");
                     String speech = "긴급 질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
                     tts.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
@@ -522,6 +532,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             Log.d("testt", path);
             filePath = Uri.fromFile(new File(path));
             uploadPhotoFile(filePath);
+            question_layout.setBackgroundResource(R.drawable.gradient4);
             String totalSpeak = "더 정확한 답변을 받기 위해 음성을 녹음할게요.\n\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면 화면을 길게 눌러주세요.\n3 2 1";
             textView.setText("더 정확한 답변을 받기 위해\n음성을 녹음할게요.\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면\n화면을 길게 눌러주세요.\n3 2 1");
             tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);

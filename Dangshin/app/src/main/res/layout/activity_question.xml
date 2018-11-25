@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="#f6f3ec"
     android:gravity="center_horizontal"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/question_layout">
 
     <Button
         android:id="@+id/logout"
@@ -36,5 +37,39 @@
         android:layout_height="83dp"
         android:layout_marginTop="150sp"
         android:src="@drawable/arrow_up2" />
+
+    <LinearLayout
+        android:id="@+id/recordlinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/playbutton"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/selector_stop_play" />
+            <SeekBar
+                android:id="@+id/seekbar"
+                android:layout_width="500dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/reportbutton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="신고"
+            android:visibility="gone" />
+    </LinearLayout>
 
 </LinearLayout>

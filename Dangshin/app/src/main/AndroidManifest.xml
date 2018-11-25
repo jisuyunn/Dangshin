@@ -5,7 +5,9 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,7 +15,7 @@
     <uses-permission
         android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USER_FULL"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USER_FULL" />
 
     <application
         android:allowBackup="true"
@@ -31,6 +33,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
         <service android:name=".PushMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -41,10 +44,9 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <activity android:name=".IntroActivity" ></activity>
-        <activity android:name=".QuestionActivity">
 
-        </activity>
+        <activity android:name=".IntroActivity" />
+        <activity android:name=".QuestionActivity"></activity>
         <activity android:name=".QuestionAgainActivity" />
         <activity android:name=".AnswerActivity" />
         <activity android:name=".UserActivity" />
@@ -60,9 +62,11 @@
         </activity>
         <activity android:name=".SignInActivity" />
         <activity android:name=".QuestionListActivity" />
-        <activity android:name=".RecordActivity"></activity>
-        <activity android:name=".CustomCameraActivity"
-            android:screenOrientation="portrait"></activity>
+        <activity android:name=".RecordActivity" />
+        <activity
+            android:name=".CustomCameraActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ListenDoneActivity"></activity>
     </application>
 
 </manifest>
