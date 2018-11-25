@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
         // firebase database 참조 객체
         final DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
 
-
         // 현재 접속중인 사용자 있음 -> 다음 동작으로
         if (user != null) {
             userId = user.getEmail();
@@ -51,22 +50,41 @@ public class MainActivity extends AppCompatActivity {
                         if(ui.u_position.equals("Volunteer")){      // 접속한 사용자가 봉사자일 경우
                             DatabaseReference updateReference;
                             updateReference = FirebaseDatabase.getInstance().getReference("UserInfo");
-                            Query query = updateReference.orderByChild("u_googleId").equalTo(userId);
-                            if(flag){
-                                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        for(DataSnapshot child : dataSnapshot.getChildren()){
-                                            child.getRef().child("u_online").setValue(true);
-                                            // Toast.makeText(MainActivity.this,"Volunteer 접속 시작", Toast.LENGTH_SHORT).show();
-                                            Log.d("testt  ", "MA ondatachanged : " + String.valueOf(flag));
+                            final Query query = updateReference.orderByChild("u_googleId").equalTo(userId);
+                            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot child : dataSnapshot.getChildren()){
+                                        child.getRef().child("u_online").setValue(true);
+                                        String qid = child.getRef().child("urgent_qid").toString();
+
+                                        if(!qid.equals("")){
+                                            Query query1 = FirebaseDatabase.getInstance().getReference("QuestionInfo").orderByChild("q_id").equalTo(qid);
+                                            query1.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                        QuestionInfo qi  = snapshot.getValue(QuestionInfo.class);
+                                                        Intent intent = new Intent(MainActivity.this, AnswerActivity.class);
+                                                        Bundle bundle = new Bundle();
+                                                        bundle.putSerializable("question", qi);
+                                                        intent.putExtras(bundle);
+                                                        MainActivity.this.startActivity(intent);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            });
 
                                         }
-                                    }                @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
                                     }
-                                });
-                            }
+                                }                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
 
                             Intent it = new Intent(MainActivity.this,QuestionListActivity.class);
                             startActivity(it);
@@ -113,23 +131,23 @@ public class MainActivity extends AppCompatActivity {
                                 FirebaseDatabase.getInstance().getReference("QuestionInfo")
                                         .orderByKey().equalTo(ui.q_key)
                                         .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                            QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
-                                            Intent it = new Intent(MainActivity.this,ListenDoneActivity.class);
-                                            Bundle bundle = new Bundle();
-                                            bundle.putSerializable("question",questionInfo);
-                                            it.putExtras(bundle);
-                                            startActivity(it);
-                                            finish();
-                                        }
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                    QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
+                                                    Intent it = new Intent(MainActivity.this,ListenActivity.class);
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putSerializable("question",questionInfo);
+                                                    it.putExtras(bundle);
+                                                    startActivity(it);
+                                                    finish();
+                                                }
+                                            }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                    }
-                                });
+                                            }
+                                        });
                             }
                         }
                     }
@@ -144,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             });
 
 
-        // 현재 접속중인 사용자 없음 -> 로그인(가입)
+            // 현재 접속중인 사용자 없음 -> 로그인(가입)
         } else {
             Intent intent = new Intent(MainActivity.this, UserActivity.class);
             startActivity(intent);

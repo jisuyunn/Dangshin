@@ -51,10 +51,6 @@ public class UserActivity extends AppCompatActivity {
     // 유저 데이터베이스 참조 객체
     private DatabaseReference UserDatabase;
 
-    private String userId;  // 유저의 ID
-    int i = 0;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +119,7 @@ public class UserActivity extends AppCompatActivity {
                         Log.e("GoogleLogin", "personEmail=" + personEmail);
                         Log.e("GoogleLogin", "personId=" + personId);
                         Log.e("GoogleLogin", "tokenKey=" + tokenKey);
-                        Toast.makeText(UserActivity.this,"구글로그인성공",Toast.LENGTH_LONG).show();
+                        //Toast.makeText(UserActivity.this,"구글로그인성공",Toast.LENGTH_LONG).show();
 
                     } else {
                         // 로그인 실패 했을때
@@ -145,7 +141,7 @@ public class UserActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(UserActivity.this, "로그인 성공", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(UserActivity.this, "로그인 성공", Toast.LENGTH_LONG).show();
                             // 로그인 성공
                             final FirebaseUser user = mAuth.getCurrentUser();
 

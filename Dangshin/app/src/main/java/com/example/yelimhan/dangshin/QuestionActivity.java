@@ -49,15 +49,24 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,6 +92,9 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     GestureDetector detector;
     String userId = "";
     String userq_key = "";
+    String volIndexId = "";
+    String newQuestion = "";
+
     //사진
     Uri photoURI;
     private Uri filePath;
@@ -339,7 +351,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
                     // 데이터베이스에 질문 추가
                     mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-                    String newQuestion = mDatabase.push().getKey();
+                    newQuestion = mDatabase.push().getKey();
                     QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
                     mDatabase.child(newQuestion).setValue(questionInfo);
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
@@ -365,6 +377,12 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
+                    Log.d("testt", "urgent : "+String.valueOf(urgent_flag));
+                    sentUrgent();
+
+
+
+
                 }
             } catch (Exception ex) {
                 Log.d("swipe", ex.toString());
@@ -375,37 +393,70 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
     }
 
+    public void sentUrgent() {
+        // 1 긴급 질문 저장
+        // 2 온라인인 봉사자 검색해서 한명 뽑아냄
+        // 3 푸시메세지 보냄 (해당봉사자 info에 질문id 추가)
+        final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
+        final String SERVER_KEY = "AAAAQjYIgGo:APA91bFDx0BUk2pa77EAAmeAIak73owBnfZbZitHV3G3e7_4_wCSpkv2yqCga0fk03jJ8eTvyxmNv0Oqze0FuzwFDYm9vE_zSrBiLt-tw5RTDX6W6I79pGnU91rTdddbcwaU5qOgIEA-";
 
-    private void goCamera() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE );
-        List<ResolveInfo> resolvedIntentActivities = QuestionActivity.this.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        // 2 온라인인 봉사자 검색해서 한명 뽑아냄
+        final DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
+        Query query = table.orderByChild("u_online").equalTo(true);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    UserInfo userInfo = snapshot.getValue(UserInfo.class);          // 온라인 봉사자 랜덤으로 가져오려면 여기 바꿈
+                    Log.d("testt", "selected online volunteer : "+userInfo.u_googleId);
+                    volIndexId = snapshot.getKey().toString();
 
-        photoURI = getFileUri();
-        for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+                    final String usertoken = userInfo.u_token;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                // FMC 메시지 생성 start
+                                JSONObject root = new JSONObject();
+                                JSONObject notification = new JSONObject();
+                                notification.put("body", "눌러서 긴급한 질문에 답해주세요!");
+                                notification.put("title", getString(R.string.app_name));
+                                root.put("data", notification);
+                                root.put("to", usertoken);
 
-            String packageName = resolvedIntentInfo.activityInfo.packageName;
+                                //root.put("click_action", "URGENT_PUSH_ACTIVITY");
+                                // FMC 메시지 생성 end
 
-            QuestionActivity.this.grantUriPermission(packageName,      // 패키지이름
-                    photoURI, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
-        intent.putExtra( MediaStore.EXTRA_OUTPUT, photoURI );
-        startActivityForResult( intent, 1 );
-        //Intent cameraIntent = new Intent(QuestionActivity.this, CustomCameraActivity.class);
-        //startActivityForResult(cameraIntent, CUSTOM_CAMERA);
-    }
+                                Log.d("testt", "vid: "+volIndexId +" , qid: "+ newQuestion);
+                                URL Url = new URL(FCM_MESSAGE_URL);
+                                HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                                conn.setRequestMethod("POST");
+                                conn.setDoOutput(true);
+                                conn.setDoInput(true);
+                                conn.addRequestProperty("Authorization", "key=" + SERVER_KEY);
+                                conn.setRequestProperty("Accept", "application/json");
+                                conn.setRequestProperty("Content-type", "application/json");
+                                OutputStream os = conn.getOutputStream();
+                                os.write(root.toString().getBytes("utf-8"));
+                                os.flush();
+                                conn.getResponseCode();
+                                table.child(volIndexId).child("urgent_qid").setValue(newQuestion);
+                                QuestionActivity.this.finish();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    break;
+                }
+            }
 
-    private Uri getFileUri() {
-        // 저장되는 사진 경로
-        String dir_path = "/sdcard/Android/data/com.example.yelimhan.dangshin/";
-        File dir = new File(dir_path);
-        if(!dir.exists()){
-            dir.mkdirs();
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
 
-        // 저장되는 사진 이름
-        File file = new File( dir, DateFormat.format("yyyy-MM-dd_hhmmss", new Date()).toString()+ ".jpg" );
-        imgPath = file.getAbsolutePath();
-        return FileProvider.getUriForFile( this, getApplicationContext().getPackageName() + ".fileprovider", file );
+
     }
 
     public void permissionCheck(){
@@ -555,42 +606,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 //                    mRecognizer.setRecognitionListener(listener);
 //                    mRecognizer.startListening(intent);
                     mRecorder.start();
-                    //startActivityForResult(intent, RECORD_AUDIO);
-                    isRecording = true;
-                }
-            }, 12000);
-        }
-
-
-        // 기본 카메라앱에서 돌아옴
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            //filePath = Uri.parse(data.getStringExtra("PATH"));
-            filePath = photoURI;
-            uploadPhotoFile(filePath);
-            String totalSpeak = "더 정확한 답변을 듣기 위해 음성을 녹음할게요.\n\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면 화면을 길게 눌러주세요.\n3 2 1";
-            textView.setText("더 정확한 답변을 듣기 위해\n음성을 녹음할게요.\n알고싶은 내용을 질문해주세요.\n\n음성 녹음을 끝내고싶으면\n화면을 길게 눌러주세요.\n3 2 1");
-            tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
-            final Handler delayHandler = new Handler();
-            delayHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if(isRecording == false){
-                        if (ActivityCompat.checkSelfPermission(QuestionActivity.this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-                            ActivityCompat.requestPermissions(QuestionActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},
-                                    RECORD_AUDIO);
-                        }
-                    }
-                    initAudioRecorder();
-                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
-                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
-                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(QuestionActivity.this);
-                    //mRecognizer.setRecognitionListener(listener);
-                    //mRecognizer.startListening(intent);
-                    mRecognizer.setRecognitionListener(listener);
-                    //mRecorder.start();
-                    mRecognizer.startListening(intent);
                     //startActivityForResult(intent, RECORD_AUDIO);
                     isRecording = true;
                 }

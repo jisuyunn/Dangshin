@@ -68,7 +68,7 @@ public class SignInActivity extends AppCompatActivity{
     private Boolean saveUserToDatabase(String pos){
 
         // 파이어베이스에 데이터 넣는 부분(랜덤 키로 push)
-        UserInfo uif = new UserInfo(userID,pos,true, 0, FirebaseInstanceId.getInstance().getToken(), "");
+        UserInfo uif = new UserInfo(userID,pos,true, 0, FirebaseInstanceId.getInstance().getToken(), "", "");
         DatabaseReference newUser = table.push();
         newUser.setValue(uif);
         Intent intent = new Intent(SignInActivity.this,MainActivity.class);

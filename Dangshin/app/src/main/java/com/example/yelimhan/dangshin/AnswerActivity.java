@@ -233,7 +233,6 @@ public class AnswerActivity extends AppCompatActivity {
                                                     notification.put("title", getString(R.string.app_name));
                                                     root.put("data", notification);
                                                     root.put("to", usertoken);
-                                                    //root.put("click_action", "OPEN_ACTIVITY");
                                                     // FMC 메시지 생성 end
 
                                                     URL Url = new URL(FCM_MESSAGE_URL);

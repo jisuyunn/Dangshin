@@ -9,14 +9,16 @@ public class UserInfo {
     public int u_haveQuestion;      // 질문이 없으면 0, 있는데 답변이 없으면 1, 질문있고 답변도 있으면 2
     public String u_token;
     public String q_key;            // 질문이 있는 경우 질문의 id
+    public String urgent_qid;
 
-    UserInfo(String i, String p, boolean o, int q, String t, String k){
+    UserInfo(String i, String p, boolean o, int q, String t, String k, String u){
         this.u_googleId = i;
         this.u_position = p;
         this.u_online = o;
         this.u_haveQuestion = q;
         this.u_token = t;
         this.q_key = k;
+        this.urgent_qid = u;
     }
 
     UserInfo() {
