@@ -17,7 +17,7 @@
             android:text="답변확인"
             android:textColor="#251e26"
             android:fontFamily="@font/jua"
-            android:textSize="40sp"
+            android:textSize="35sp"
             android:layout_margin="20dp"
             android:layout_gravity="center"/>
         <TextView
@@ -35,23 +35,23 @@
         <ImageView
             android:layout_margin="10dp"
             android:layout_gravity="center"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/arrow_up"/>
         <TextView
             android:textColor="#251e26"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:fontFamily="@font/jua"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:gravity="center"
             android:text="다시 들으시려면 위로 스와이프,\n새로 질문하려면 아래로 스와이프\n해주세요">
         </TextView>
         <ImageView
             android:layout_margin="10dp"
             android:layout_gravity="center"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/arrow_up"
             android:scaleY="-1"/>
     </LinearLayout>
