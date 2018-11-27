@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     String userId = "";
     public boolean flag = true;
     String userIndexId = "";
-
+    String qid = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     for(DataSnapshot child : dataSnapshot.getChildren()){
                                         child.getRef().child("u_online").setValue(true);
-                                        String qid = child.getRef().child("urgent_qid").toString();
-
+                                        qid = child.getRef().child("urgent_qid").toString();
+                                        Log.d("testt", "urgent qid : "+qid);
                                         if(!qid.equals("")){
                                             Query query1 = FirebaseDatabase.getInstance().getReference("QuestionInfo").orderByChild("q_id").equalTo(qid);
                                             query1.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                                                         Intent intent = new Intent(MainActivity.this, AnswerActivity.class);
                                                         Bundle bundle = new Bundle();
                                                         bundle.putSerializable("question", qi);
+                                                        Log.d("testt", "query qid success: "+qid);
                                                         intent.putExtras(bundle);
                                                         MainActivity.this.startActivity(intent);
                                                     }

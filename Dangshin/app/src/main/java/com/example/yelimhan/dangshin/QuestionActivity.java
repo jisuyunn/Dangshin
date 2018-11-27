@@ -371,14 +371,14 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
                     // 데이터베이스에 질문 추가
                     mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-                    String newQuestion = mDatabase.push().getKey();
+                    newQuestion = mDatabase.push().getKey();
                     QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
                     mDatabase.child(newQuestion).setValue(questionInfo);
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
                     Log.d("testt", "urgent : "+String.valueOf(urgent_flag));
-                    sentUrgent();
+                    sendUrgent();
 
 
 
@@ -393,7 +393,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
     }
 
-    public void sentUrgent() {
+    public void sendUrgent() {
         // 1 긴급 질문 저장
         // 2 온라인인 봉사자 검색해서 한명 뽑아냄
         // 3 푸시메세지 보냄 (해당봉사자 info에 질문id 추가)

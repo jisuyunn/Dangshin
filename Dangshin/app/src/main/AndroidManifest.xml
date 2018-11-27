@@ -49,9 +49,6 @@
         <activity android:name=".QuestionActivity"></activity>
         <activity android:name=".QuestionAgainActivity" />
         <activity android:name=".AnswerActivity" >
-            <intent-filter>
-                <action android:name="URGENT_PUSH_ACTIVITY"/>
-            </intent-filter>
         </activity>
         <activity android:name=".UserActivity" />
         <activity android:name=".ReportActivity" />
