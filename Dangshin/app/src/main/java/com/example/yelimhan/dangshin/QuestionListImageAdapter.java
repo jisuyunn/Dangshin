@@ -62,35 +62,10 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
     @Override
     public void onBindViewHolder(QuestionListImageAdapter.ViewHolder holder, int position) {
         final QuestionInfo questionInfo = questionInfos.get(position);
-         // 시간계산
+        // 시간계산
         long nowTime = System.currentTimeMillis();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
-        try {
-            Date date1 = dateFormat.parse(questionInfo.q_dataTime);
-            long diffTime = nowTime - date1.getTime();
-            long diffsec = diffTime / 1000 % 60;
-            long diffmin = diffTime / (60 * 1000) % 60;
-            long diffhour = diffTime / (60 * 60 * 1000) % 24;
-            long diffDays = diffTime / (24 * 60 * 60 * 1000);
-            if (diffDays == 0) {
-                if (diffhour == 0) {
-                    if (diffmin == 0) {
-                        if (diffsec <= 0) {
-                            holder.text.setText("방금 전");
-                        }
-                        holder.text.setText(diffsec + "초 전");
-                    } else {
-                        holder.text.setText(diffmin + "분 전");
-                    }
-                } else {
-                    holder.text.setText(diffhour + "시간 전");
-                }
-            } else {
-                holder.text.setText(diffDays + "일 전");
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Date date1;
         // 긴급이면
         if (questionInfos.get(position).checkUrgent) {
             holder.urgent.setVisibility(View.VISIBLE);
@@ -113,9 +88,35 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
                     mContext.startActivity(intent);
                 }
             });
+            try {
+                date1 = dateFormat.parse(questionInfo.q_dataTime);
+                long diffTime = nowTime - date1.getTime();
+                long diffsec = diffTime / 1000 % 60;
+                long diffmin = diffTime / (60 * 1000) % 60;
+                long diffhour = diffTime / (60 * 60 * 1000) % 24;
+                long diffDays = diffTime / (24 * 60 * 60 * 1000);
+                if (diffDays == 0) {
+                    if (diffhour == 0) {
+                        if (diffmin == 0) {
+                            if (diffsec <= 0) {
+                                holder.text.setText("방금 전");
+                            }
+                            holder.text.setText(diffsec + "초 전");
+                        } else {
+                            holder.text.setText(diffmin + "분 전");
+                        }
+                    } else {
+                        holder.text.setText(diffhour + "시간 전");
+                    }
+                } else {
+                    holder.text.setText(diffDays + "일 전");
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
-        // 답변이 있으면
 
+        // 답변이 있으면
         if (doneFlag && questionInfos.get(position).checkAnswer) {
             GlideApp.with(mContext)
                     .load(storageReference.child(questionInfo.q_pic))

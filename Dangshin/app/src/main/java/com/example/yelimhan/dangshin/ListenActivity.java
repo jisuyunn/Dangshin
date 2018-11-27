@@ -60,11 +60,8 @@ public class ListenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_listen);
         Intent intent = getIntent();
         questionInfo = (QuestionInfo)intent.getSerializableExtra("question");
-        imageView = findViewById(R.id.answerimage2);
-        answerText = findViewById(R.id.answertext2);
 
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -80,11 +77,15 @@ public class ListenActivity extends AppCompatActivity {
                         UserInfo ui = snapshot.getValue(UserInfo.class);
                         userReference = snapshot.getRef();
                         if(ui.u_position.equals("Volunteer")) {
+                            setContentView(R.layout.activity_listen);
+                            imageView = findViewById(R.id.answerimage2);
                             setMediaPlayer();
                         } else if(ui.u_position.equals("Blind")){
+                            setContentView(R.layout.activity_blind_listen);
                             userReference.child("q_key").setValue("");
                             userReference.child("u_haveQuestion").setValue(0);
                         }
+                        answerText = findViewById(R.id.answertext2);
                         showAnswer(ui.u_position);
                     }
                 }
@@ -194,12 +195,8 @@ public class ListenActivity extends AppCompatActivity {
                     .load(storageReference.child(questionInfo.q_pic))
                     .override(500, 300)
                     .into(imageView);
-            questionText = findViewById(R.id.questiontext2);
-            // STT
-            questionText.setText("음성녹음 STT한 질문글");
-        } else if(u_position.equals("Blind")) {        // 시각 장애인 이라면
-            findViewById(R.id.recordlinear).setVisibility(View.GONE);
-            imageView.setVisibility(View.GONE);
+            // STT 일단 뺌
+            //questionText.setText("음성녹음 STT한 질문글");
         }
         mDatabase = FirebaseDatabase.getInstance().getReference("AnswerInfo");
         mDatabase.orderByChild("q_id").equalTo(questionInfo.q_id).addValueEventListener(new ValueEventListener() {
@@ -210,9 +207,10 @@ public class ListenActivity extends AppCompatActivity {
                     answerText.setText(text);
                     if (u_position.equals("Blind")) {    // 시각 장애인 이라면
                         texttospeechs();
-                    }
-                    if (!userId.equals(snapshot.child("a_writer").getValue().toString())) {
-                        doreport();
+                    } else {
+                        if (!userId.equals(snapshot.child("a_writer").getValue().toString())) {
+                            doreport();
+                        }
                     }
                 }
             }

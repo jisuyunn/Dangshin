@@ -67,9 +67,8 @@ public class AnswerActivity extends AppCompatActivity {
         imageView = findViewById(R.id.answerimage);
         GlideApp.with(this)
                 .load(storageReference.child(questionInfo.q_pic))
-                .override(500, 300)
+                .override(500, 380)
                 .into(imageView);
-        questionText = findViewById(R.id.questiontext);
 
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -94,8 +93,8 @@ public class AnswerActivity extends AppCompatActivity {
 
         setMediaPlayer();
 
-        // STT
-        questionText.setText("음성녹음 STT한 질문글");
+        // STT 일단 뺌(view도)
+        //questionText.setText("음성녹음 STT한 질문글");
 
         // 확인버튼 누르면 답변 디비에 저장
         editText = findViewById(R.id.answertext);

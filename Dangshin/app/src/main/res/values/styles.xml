@@ -9,7 +9,11 @@
     </style>
 
     <style name="SeekBar" parent="Widget.AppCompat.SeekBar">
-        <item name="android:colorAccent">@color/colorSeekbar</item>
+        <item name="colorAccent">@color/colorSeekbar</item>
     </style>
 
+    <style name="EditTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@color/spring3</item>
+        <item name="colorControlNormal">@color/spring2</item>
+    </style>
 </resources>

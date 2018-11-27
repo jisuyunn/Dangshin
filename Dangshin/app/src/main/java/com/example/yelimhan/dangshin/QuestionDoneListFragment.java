@@ -149,7 +149,9 @@ public class QuestionDoneListFragment extends Fragment {
                 imagePath.remove(0);
             }
         }
-        gridImageAdapter.add(path);
+        if(path.size()>0) {
+            gridImageAdapter.add(path);
+        }
     }
 
 }

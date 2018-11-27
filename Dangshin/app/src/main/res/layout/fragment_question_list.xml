@@ -17,6 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:fontFamily="@font/jua"
+        android:letterSpacing="0.05"
         android:text="질문을 선택해 답해주세요!"
         android:textSize="20sp" />
     <LinearLayout
