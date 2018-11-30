@@ -59,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
                                         qid = child.getRef().child("urgent_qid").toString();
                                         Log.d("testt", "urgent qid : "+qid);
                                         if(!qid.equals("")){
-                                            Query query1 = FirebaseDatabase.getInstance().getReference("QuestionInfo").orderByChild("q_id").equalTo(qid);
+                                            DatabaseReference uqidReference;
+                                            uqidReference = FirebaseDatabase.getInstance().getReference("QuestionInfo");
+                                            Query query1 = uqidReference.orderByChild("q_id").equalTo(qid);
                                             query1.addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

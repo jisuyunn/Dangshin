@@ -8,8 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -18,7 +16,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,7 +29,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 
@@ -79,9 +75,7 @@ public class UserActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Set the dimensions of the sign-in button.
         ImageButton signInButton = findViewById(R.id.sign_in_btn);
-        //ImageButton.setSize(SignInButton.SIZE_STANDARD);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,7 +113,6 @@ public class UserActivity extends AppCompatActivity {
                         Log.e("GoogleLogin", "personEmail=" + personEmail);
                         Log.e("GoogleLogin", "personId=" + personId);
                         Log.e("GoogleLogin", "tokenKey=" + tokenKey);
-                        //Toast.makeText(UserActivity.this,"구글로그인성공",Toast.LENGTH_LONG).show();
 
                     } else {
                         // 로그인 실패 했을때
@@ -141,7 +134,6 @@ public class UserActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            //Toast.makeText(UserActivity.this, "로그인 성공", Toast.LENGTH_LONG).show();
                             // 로그인 성공
                             final FirebaseUser user = mAuth.getCurrentUser();
 

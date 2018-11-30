@@ -118,7 +118,6 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_question);
 
-        Toast.makeText(this, "  Blind - 질문하기 (QuestionAgainActivity",Toast.LENGTH_SHORT).show();
         permissionCheck();
 
         Intent it = getIntent();
@@ -292,7 +291,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 //                } //down to up swipe
                 if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 0) {
                     stage = 1;
-                    Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
                     question_layout.setBackgroundResource(drawable.gradient2);
                     String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.";
                     textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.");
@@ -331,7 +330,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
-                    Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
                     question_layout.setBackgroundColor(Color.rgb(225, 191, 224));
                     textView.setText("긴급 질문 등록이\n완료되었습니다.\n\n답변이 오면 알려드릴게요!");
                     String speech = "긴급 질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
@@ -399,9 +398,9 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
         if(cameraPermissionCheck == PackageManager.PERMISSION_GRANTED
                 && writePermissionCheck == PackageManager.PERMISSION_GRANTED
                 && recordPermissionCheck == PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(getApplicationContext(), "권한 있음", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "권한 있음", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(getApplicationContext(), "권한 없음", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "권한 없음", Toast.LENGTH_SHORT).show();
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
                     || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])
                     ||  ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[2])) {
@@ -466,7 +465,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
         if(requestCode == RECORD_AUDIO && resultCode == RESULT_OK){
             ArrayList<String> speechList = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String result = speechList.get(0);
-            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
 //            Uri audiouri = data.getData();
 //            ContentResolver contentResolver = getContentResolver();
 //            InputStream inputStream = null;
@@ -732,7 +731,8 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
         @Override
         public void onError(int error) {
-            Toast.makeText(QuestionAgainActivity.this, String.valueOf(error), Toast.LENGTH_SHORT).show();
+            Log.d("testt onError  ", String.valueOf(error));
+
         }
 
         @Override
@@ -744,7 +744,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
             String[] rs = new String[mResult.size()];
             mResult.toArray(rs);
 
-            Toast.makeText(QuestionAgainActivity.this, rs[0], Toast.LENGTH_SHORT).show();
+            Log.d("testt rs[0] : ", rs[0]);
         }
 
         @Override

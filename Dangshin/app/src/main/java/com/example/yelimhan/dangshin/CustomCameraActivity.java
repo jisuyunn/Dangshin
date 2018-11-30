@@ -29,10 +29,8 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-import static android.speech.tts.TextToSpeech.ERROR;
 
 public class CustomCameraActivity extends Activity {
     private static final String TAG = "CamTestActivity";

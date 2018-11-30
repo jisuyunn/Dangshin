@@ -4,7 +4,6 @@ package com.example.yelimhan.dangshin;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -20,7 +19,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,7 +49,6 @@ public class ListenDoneActivity extends AppCompatActivity {
     private boolean isPlaying = false;
     private boolean isPrepared = false;
     private String text;
-    private float curpos;
     private String utteranceId;
     private String userId;
     private SeekBar seekBar;

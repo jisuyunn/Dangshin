@@ -5,12 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +13,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.MultiTransformation;
@@ -34,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.firebase.ui.auth.AuthUI.TAG;
 
 public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListImageAdapter.ViewHolder>{
 

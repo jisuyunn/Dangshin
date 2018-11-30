@@ -3,7 +3,6 @@ package com.example.yelimhan.dangshin;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;

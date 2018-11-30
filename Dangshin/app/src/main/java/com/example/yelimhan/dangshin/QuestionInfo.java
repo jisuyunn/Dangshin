@@ -1,7 +1,6 @@
 package com.example.yelimhan.dangshin;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;

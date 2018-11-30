@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f6f3ec"
+    android:background="@color/spring1"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:id="@+id/question_layout">
@@ -24,18 +24,18 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="100sp"
-        android:fontFamily="@font/dxgpgb"
+        android:fontFamily="@font/jua"
         android:gravity="center"
-        android:lineSpacingExtra="8dp"
-        android:text="등록된 질문이 없네요.\n위로 화면을 밀면\n바로 질문할 수 있어요."
+        android:lineSpacingExtra="12dp"
+        android:text="등록된 질문이 없네요.\n위로 화면을 밀면\n질문을 등록할 수 있어요."
         android:textColor="#463b4f"
-        android:textSize="25dp" />
+        android:textSize="30dp" />
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/imageView"
         android:layout_width="101dp"
         android:layout_height="83dp"
-        android:layout_marginTop="150sp"
+        android:layout_marginTop="150dp"
         android:src="@drawable/arrow_up2" />
 
     <LinearLayout

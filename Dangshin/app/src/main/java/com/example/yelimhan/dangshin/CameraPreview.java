@@ -2,8 +2,6 @@ package com.example.yelimhan.dangshin;
 
 
 import android.content.res.Configuration;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 
 import java.io.IOException;

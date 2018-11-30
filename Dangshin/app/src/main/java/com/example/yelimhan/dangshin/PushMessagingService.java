@@ -61,7 +61,7 @@ public class PushMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, "봄")
                         .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("답변 도착")
+                        //.setContentTitle("알림 도착")
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)

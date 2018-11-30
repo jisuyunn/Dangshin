@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaRecorder;
@@ -14,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -24,11 +22,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.GestureDetector;
@@ -70,12 +65,9 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import static com.example.yelimhan.dangshin.R.*;
-import static com.example.yelimhan.dangshin.R.drawable.*;
-import static com.example.yelimhan.dangshin.R.id.question_layout;
 
 
 // 질문하기 (Blind)
@@ -124,7 +116,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         super.onCreate(savedInstanceState);
         setContentView(layout.activity_question);
 
-        Toast.makeText(this, "  Blind - 질문하기 (QuestionActivity",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "  Blind - 질문하기 (QuestionActivity",Toast.LENGTH_SHORT).show();
         permissionCheck();
 
         Intent it = getIntent();
@@ -153,7 +145,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     tts.setLanguage(Locale.KOREAN);
                 }
 
-                String speach = "등록된 질문이 없네요. 위로 화면을 밀면 바로 질문할 수 있어요.";
+                String speach = "등록된 질문이 없네요. 위로 화면을 밀면 질문을 등록할 수 있어요";
                 tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
 
                 if(status == TextToSpeech.SUCCESS) {
@@ -206,7 +198,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                 alert.setTitle("로그아웃");
 
                 // 대화창 배경 색 설정
-                alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255,62,79,92)));
+                alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255,213,167,212)));
                 alert.show();
             }
         });
@@ -322,7 +314,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 //                } //down to up swipe
                 if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 0) {
                     stage = 1;
-                    Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Swipe UP", Toast.LENGTH_SHORT).show();
                     question_layout.setBackgroundResource(R.drawable.gradient2);
                     String totalSpeak = "먼저 사진을 찍을게요\n\n알고 싶은 물체나 내용을 평평한 곳에 놓아주세요.";
                     textView.setText("먼저 사진을 찍을게요\n알고 싶은 물체나 내용을\n평평한 곳에 놓아주세요.");
@@ -338,7 +330,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                             Intent intent = new Intent(QuestionActivity.this, CustomCameraActivity.class);
                             startActivityForResult(intent, 2222);
                         }
-                    }, 9000);
+                    }, 8000);
 
                 } // up to down swipe
                 else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && stage == 2) {
@@ -361,7 +353,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
-                    Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
                     question_layout.setBackgroundColor(Color.rgb(225, 191, 224));
                     textView.setText("긴급 질문 등록이\n완료되었습니다.\n\n답변이 오면 알려드릴게요!");
                     String speech = "긴급 질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
@@ -419,7 +411,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                                 // FMC 메시지 생성 start
                                 JSONObject root = new JSONObject();
                                 JSONObject notification = new JSONObject();
-                                notification.put("body", "눌러서 긴급한 질문에 답해주세요!");
+                                notification.put("body", "지금 알림을 눌러서 긴급한 질문에 답해주세요!");
                                 notification.put("title", getString(R.string.app_name));
                                 root.put("data", notification);
                                 root.put("to", usertoken);
@@ -468,9 +460,9 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         if(cameraPermissionCheck == PackageManager.PERMISSION_GRANTED
                 && writePermissionCheck == PackageManager.PERMISSION_GRANTED
                 && recordPermissionCheck == PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(getApplicationContext(), "권한 있음", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "권한 있음", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(getApplicationContext(), "권한 없음", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "권한 없음", Toast.LENGTH_SHORT).show();
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
                     || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])
                      ||  ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[2])) {
@@ -535,7 +527,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         if(requestCode == RECORD_AUDIO && resultCode == RESULT_OK){
             ArrayList<String> speechList = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String result = speechList.get(0);
-            Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
 //            Uri audiouri = data.getData();
 //            ContentResolver contentResolver = getContentResolver();
 //            InputStream inputStream = null;
@@ -640,6 +632,12 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             progressDialog.dismiss(); //업로드 진행 Dialog 상자 닫기
                             Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
+                            File f = new File(filePath.getPath());
+                            if(f.delete())
+                                Log.d("testt", "delete success");
+                            else
+                                Log.d("testt", "delete failed");
+
                         }
                     })
                     //실패시
@@ -711,6 +709,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             progressDialog.dismiss(); //업로드 진행 Dialog 상자 닫기
                             Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
+
                         }
                     })
                     //실패시
@@ -732,6 +731,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                             progressDialog.setMessage("Uploaded " + ((int) progress) + "% ...");
                         }
                     });
+
+
         } else {
             Toast.makeText(getApplicationContext(), "파일을 먼저 선택하세요.", Toast.LENGTH_SHORT).show();
         }
@@ -765,7 +766,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
         @Override
         public void onError(int error) {
-            Toast.makeText(QuestionActivity.this, String.valueOf(error), Toast.LENGTH_SHORT).show();
+            Log.d("testt onError  ", String.valueOf(error));
             }
 
         @Override
@@ -777,7 +778,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             String[] rs = new String[mResult.size()];
             mResult.toArray(rs);
 
-            Toast.makeText(QuestionActivity.this, rs[0], Toast.LENGTH_SHORT).show();
+            Log.d("testt rs[0] : ", rs[0]);
         }
 
         @Override
@@ -790,5 +791,21 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
         }
     };
+    @Override
+    public void onStop() {
+        if (tts != null) {
+            tts.stop();
+        }
+        super.onStop();
+    }
 
+    @Override
+    protected void onDestroy() {
+        if(tts!=null) {
+            tts.stop();
+            tts.shutdown();
+            tts = null;
+        }
+        super.onDestroy();
+    }
 }

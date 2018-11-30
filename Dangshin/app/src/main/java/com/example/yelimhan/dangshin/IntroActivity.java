@@ -111,9 +111,9 @@ public class IntroActivity extends AppCompatActivity {
 
         if(cameraPermissionCheck == PackageManager.PERMISSION_GRANTED
                 && writePermissionCheck == PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(getApplicationContext(), "권한 있음", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "권한 있음", Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(getApplicationContext(), "권한 없음", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "권한 없음", Toast.LENGTH_SHORT).show();
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
                     || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])) {
 
