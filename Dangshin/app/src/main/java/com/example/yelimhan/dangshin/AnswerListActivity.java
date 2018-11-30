@@ -63,7 +63,7 @@ public class AnswerListActivity extends AppCompatActivity {
                             getFirstFirebaseData();
                             // 당겨서 새로고침
                             final PullRefreshLayout layout = (PullRefreshLayout) findViewById(R.id.swipeRefreshLayout);
-                            layout.setColor(Color.MAGENTA);
+                            layout.setColor(Color.LTGRAY);
                             layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
                                 @Override
                                 public void onRefresh() {

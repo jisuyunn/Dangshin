@@ -6,8 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".AnswerActivity">
 <ScrollView
+    android:background="#ffffff"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
     <LinearLayout
         android:background="@color/spring2"
         android:layout_width="match_parent"
@@ -31,10 +32,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <LinearLayout
+            android:padding="15dp"
             android:background="@drawable/border"
             android:layout_marginTop="20dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -42,8 +44,11 @@
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:id="@+id/answerimage"
-            android:layout_width="500dp"
-            android:layout_height="300dp" />
+            android:scaleType="fitXY"
+            android:layout_width="300dp"
+            android:maxHeight="450dp"
+            android:adjustViewBounds="true"
+            android:layout_height="wrap_content" />
         <LinearLayout
             android:visibility="gone"
             android:id="@+id/recordlinear"
@@ -51,7 +56,6 @@
             android:layout_height="wrap_content">
             <RelativeLayout
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -79,6 +83,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <Button
+            android:layout_marginBottom="15dp"
             android:layout_gravity="center"
             android:id="@+id/checkbutton"
             android:text="확인"

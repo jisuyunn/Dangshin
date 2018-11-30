@@ -16,4 +16,12 @@
         <item name="colorAccent">@color/spring3</item>
         <item name="colorControlNormal">@color/spring2</item>
     </style>
+
+    <style name="TabLayoutStyle" parent="Base.Widget.Design.TabLayout">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/jua</item>
+        <item name="android:letterSpacing">0.07</item>
+
+    </style>
 </resources>

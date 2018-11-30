@@ -6,12 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".AnswerActivity">
 <ScrollView
+    android:background="#ffffff"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/spring2">
         <TextView
             android:textColor="#251e26"
@@ -28,20 +29,24 @@
         <LinearLayout
             android:background="#ffffff"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
             <LinearLayout
+                android:padding="15dp"
                 android:background="@drawable/border"
                 android:layout_marginTop="20dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/answerimage2"
-                    android:layout_width="500dp"
-                    android:layout_height="300dp"
+                    android:scaleType="fitXY"
+                    android:layout_width="300dp"
+                    android:maxHeight="450dp"
+                    android:adjustViewBounds="true"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_margin="5dp" />
                 <LinearLayout
@@ -53,7 +58,6 @@
 
                     <RelativeLayout
                         android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
@@ -73,8 +77,8 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 android:layout_width="match_parent"
@@ -96,6 +100,7 @@
                 android:layout_width="100dp"
                 android:layout_height="50dp"
                 android:text="신고하기"
+                android:layout_marginBottom="15dp"
                 android:visibility="gone" />
         </LinearLayout>
 

@@ -3,6 +3,7 @@ package com.example.yelimhan.dangshin;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -13,11 +14,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -66,16 +73,16 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
         long nowTime = System.currentTimeMillis();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
         Date date1;
-        // 긴급이면
-        if (questionInfos.get(position).checkUrgent) {
-            holder.urgent.setVisibility(View.VISIBLE);
-        }
 
         // 답변이 없으면
         if (!doneFlag && !questionInfos.get(position).checkAnswer) {
+            // 긴급이면
+            if (questionInfos.get(position).checkUrgent) {
+                holder.urgent.setVisibility(View.VISIBLE);
+            }
             GlideApp.with(mContext)
                     .load(storageReference.child(questionInfo.q_pic))
-                    //.placeholder(R.drawable.ic_image_black_24dp)
+                    .placeholder(R.drawable.ic_image_black_24dp)
                     .into(holder.image);
             holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -120,7 +127,7 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
         if (doneFlag && questionInfos.get(position).checkAnswer) {
             GlideApp.with(mContext)
                     .load(storageReference.child(questionInfo.q_pic))
-                    //.placeholder(R.drawable.ic_image_black_24dp)
+                    .placeholder(R.drawable.ic_image_black_24dp)
                     .into(holder.image);
             holder.image.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -135,14 +142,31 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
         }
     }
 
+
+    @Override
+    public void onViewAttachedToWindow(QuestionListImageAdapter.ViewHolder holder) {
+        if(holder != null) {
+            if (holder instanceof ViewHolder) {
+                ViewHolder messageHolder = (ViewHolder) holder;
+                Animation anim = new AlphaAnimation(0.0f, 1.0f);
+                anim.setDuration(400); //You can manage the time of the blink with this parameter
+                anim.setStartOffset(50);
+                anim.setRepeatMode(Animation.REVERSE);
+                anim.setRepeatCount(Animation.INFINITE);
+                holder.urgent.startAnimation(anim);
+            }
+        }
+    }
+
     @Override
     public int getItemCount() {
         return questionInfos.size();
     }
 
     public void add(ArrayList<QuestionInfo> uris) {
+        int startpos = questionInfos.size();
         questionInfos.addAll(uris);
-        notifyDataSetChanged();
+        notifyItemRangeChanged(startpos,uris.size());
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

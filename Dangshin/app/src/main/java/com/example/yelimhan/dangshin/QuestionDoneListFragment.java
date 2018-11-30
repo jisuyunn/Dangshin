@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.baoyz.widget.PullRefreshLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -44,12 +45,13 @@ public class QuestionDoneListFragment extends Fragment {
         context = container.getContext();
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.addItemDecoration(new GridSpacingItemDecoration(2,15,false));
-        view.findViewById(R.id.text3).setVisibility(View.GONE);
+        TextView textView = view.findViewById(R.id.text3);
+        textView.setText("완료된 답변목록 입니다!");
         // 파이어베이스에서 데이터 받아오기
         getFirstFirebaseData();
         // 당겨서 새로고침
         final PullRefreshLayout layout = (PullRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
-        layout.setColor(Color.MAGENTA);
+        layout.setColor(Color.LTGRAY);
         layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -99,14 +101,16 @@ public class QuestionDoneListFragment extends Fragment {
 
     public void getFirstFirebaseData() {
         mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-        mDatabase.orderByChild("checkAnswer").equalTo(true).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.orderByChild("q_dataTime").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 path.clear();
                 imagePath.clear();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
-                    imagePath.add(questionInfo);
+                    if (questionInfo.checkAnswer) {
+                        imagePath.add(questionInfo);
+                    }
                 }
                 Collections.reverse(imagePath);
                 // 그리드 뷰 사용

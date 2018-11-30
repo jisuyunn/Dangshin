@@ -153,7 +153,7 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
                 alert.setTitle("로그아웃");
 
                 // 대화창 배경 색 설정
-                alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 62, 79, 92)));
+                //alert.getWindow().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 62, 79, 92)));
                 alert.show();
                 break;
             }
@@ -197,6 +197,7 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
         qdlFragment = new QuestionDoneListFragment();
         adapter.addFrag(qlFragment, "질문");
         adapter.addFrag(qdlFragment, "완료질문");
+
         viewPager.setAdapter(adapter);
 
     }

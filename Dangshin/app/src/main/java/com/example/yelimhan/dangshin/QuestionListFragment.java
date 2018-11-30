@@ -60,7 +60,7 @@ public class QuestionListFragment extends Fragment {
         getFirstFirebaseData();
         // 당겨서 새로고침
         final PullRefreshLayout layout = (PullRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
-        layout.setColor(Color.MAGENTA);
+        layout.setColor(Color.LTGRAY);
         layout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -124,24 +124,32 @@ public class QuestionListFragment extends Fragment {
 
     public void getFirstFirebaseData() {
         mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-        mDatabase.orderByChild("checkAnswer").equalTo(false).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.orderByChild("q_dataTime").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 path.clear();
                 imagePath.clear();
+
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
-                    imagePath.add(questionInfo);
+                    if (!questionInfo.checkAnswer) {
+                        imagePath.add(questionInfo);
+                    }
+
                 }
                 // 그리드 뷰 사용
                 int size = imagePath.size();
-                Collections.reverse(imagePath);
-                if(size < MaxData) {
+                //Collections.reverse(imagePath);
+                if(size == 0) {
+                    view.findViewById(R.id.NoneQuestion).setVisibility(View.VISIBLE);
+                } else if(size < MaxData) {
+                    view.findViewById(R.id.NoneQuestion).setVisibility(View.GONE);
                     for (int i = 0; i < size; i++) {
                         path.add(imagePath.get(0));
                         imagePath.remove(0);
                     }
                 } else {
+                    view.findViewById(R.id.NoneQuestion).setVisibility(View.GONE);
                     for (int i = 0; i < MaxData; i++) {
                         path.add(imagePath.get(0));
                         imagePath.remove(0);

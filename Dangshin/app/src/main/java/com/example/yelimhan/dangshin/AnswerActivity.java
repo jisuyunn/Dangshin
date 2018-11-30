@@ -65,10 +65,18 @@ public class AnswerActivity extends AppCompatActivity {
         Intent intent = getIntent();
         questionInfo = (QuestionInfo) intent.getSerializableExtra("question");
         imageView = findViewById(R.id.answerimage);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AnswerActivity.this, ImageManager.class);
+                intent.putExtra("question", questionInfo);
+                startActivity(intent);
+            }
+        });
         GlideApp.with(this)
                 .load(storageReference.child(questionInfo.q_pic))
-                .override(500, 380)
                 .into(imageView);
+
 
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -317,11 +325,17 @@ public class AnswerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
+        imageView.setOnClickListener(null);
         isPrepared = false;
         mediaPlayer.stop();
         isPlaying = false;
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        imageView.setOnClickListener(null);
+        super.onDestroy();
     }
 
     public class PlayRecord extends Thread {
