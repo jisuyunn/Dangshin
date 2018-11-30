@@ -44,6 +44,7 @@ dependencies {
     compile 'com.android.support:cardview-v7:28.0.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+    compile 'com.google.cloud:google-cloud-speech:0.71.0-beta'
 }
 
 apply plugin: 'com.google.gms.google-services'

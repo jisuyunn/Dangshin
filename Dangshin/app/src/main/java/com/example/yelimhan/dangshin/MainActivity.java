@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                                     QuestionInfo questionInfo = snapshot.getValue(QuestionInfo.class);
-                                                    Intent it = new Intent(MainActivity.this,ListenActivity.class);
+                                                    Intent it = new Intent(MainActivity.this,ListenDoneActivity.class);
                                                     Bundle bundle = new Bundle();
                                                     bundle.putSerializable("question",questionInfo);
                                                     it.putExtras(bundle);
