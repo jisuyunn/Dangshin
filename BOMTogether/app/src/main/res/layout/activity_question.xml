@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/spring1"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:id="@+id/question_layout">
+
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:background="#00ff0000"
+        android:text="로그아웃"
+        android:textColor="#33000000" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="100sp"
+        android:fontFamily="@font/jua"
+        android:gravity="center"
+        android:lineSpacingExtra="12dp"
+        android:text="등록된 질문이 없네요.\n위로 화면을 밀면\n질문을 등록할 수 있어요."
+        android:textColor="#463b4f"
+        android:textSize="30dp" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/imageView"
+        android:layout_width="101dp"
+        android:layout_height="83dp"
+        android:layout_marginTop="150dp"
+        android:src="@drawable/arrow_up2" />
+
+    <LinearLayout
+        android:id="@+id/recordlinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/playbutton"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/selector_stop_play" />
+            <SeekBar
+                android:id="@+id/seekbar"
+                android:layout_width="500dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/reportbutton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="신고"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</LinearLayout>

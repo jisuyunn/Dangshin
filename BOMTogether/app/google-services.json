@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "306105318268",
+    "firebase_url": "https://bomtogether-5f74b.firebaseio.com",
+    "project_id": "bomtogether-5f74b",
+    "storage_bucket": "bomtogether-5f74b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306105318268:android:5d323861ea9d63b2",
+        "android_client_info": {
+          "package_name": "com.example.yelimhan.bomtogether"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306105318268-1u8divgkqpsqbglcggi6c410nvhf1lg5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.yelimhan.bomtogether",
+            "certificate_hash": "c3d0868612bad9e83c064763739c03a45f9ea93b"
+          }
+        },
+        {
+          "client_id": "306105318268-c47f68a3pa19tucpev74gfuhl05ogg60.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuX8etBTjUdEK1k4KBykeWaPjCg73zq3A"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306105318268-c47f68a3pa19tucpev74gfuhl05ogg60.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

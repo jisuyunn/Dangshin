@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
+    android:background="@color/spring2"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:textColor="#251e26"
+        android:gravity="center"
+        android:id="@+id/text3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/jua"
+        android:letterSpacing="0.05"
+        android:text="질문을 선택해 답해주세요!"
+        android:textSize="20sp" />
+
+    <RelativeLayout
+        android:background="#ffffff"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:id="@+id/NoneQuestion"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/noquestion"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_info_outline_black_24dp" />
+            <TextView
+                android:layout_alignStart="@+id/noquestion"
+                android:layout_marginStart="28dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jua"
+                android:letterSpacing="0.05"
+                android:text="질문이 아직 없네요."
+                android:textColor="#251e26"
+                android:textSize="18sp" />
+        </RelativeLayout>
+            <com.baoyz.widget.PullRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:spanCount="2"
+                app:layoutManager="android.support.v7.widget.GridLayoutManager">
+            </android.support.v7.widget.RecyclerView>
+            </com.baoyz.widget.PullRefreshLayout>
+    </RelativeLayout>
+</LinearLayout>
+</android.support.constraint.ConstraintLayout>

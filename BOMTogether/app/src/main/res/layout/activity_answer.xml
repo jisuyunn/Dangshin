@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AnswerActivity">
+<ScrollView
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:background="@color/spring2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:textColor="#251e26"
+            android:gravity="center"
+            android:id="@+id/text3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:fontFamily="@font/jua"
+            android:letterSpacing="0.07"
+            android:lineSpacingExtra="7dp"
+            android:text="\n1.사진을 보고 2.음성을 듣고\n시각장애인분들이 원하는 답변을 자세히 해주세요!"
+            android:textSize="15sp" />
+    <LinearLayout
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:padding="15dp"
+            android:background="@drawable/border"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:id="@+id/answerimage"
+            android:scaleType="fitXY"
+            android:layout_width="300dp"
+            android:maxHeight="450dp"
+            android:adjustViewBounds="true"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/recordlinear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/playbutton"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@drawable/selector_stop_play" />
+                <SeekBar
+                    android:id="@+id/seekbar"
+                    android:layout_width="500dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp" />
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+        <EditText
+            android:layout_margin="15dp"
+            android:theme="@style/EditTheme"
+            android:textColorHint="@color/spring2"
+            android:hint="답변을 달아주세요"
+            android:fontFamily="@font/jua"
+            android:id="@+id/answertext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <Button
+            android:layout_marginBottom="15dp"
+            android:layout_gravity="center"
+            android:id="@+id/checkbutton"
+            android:text="확인"
+            android:layout_width="100dp"
+            android:layout_height="50dp" />
+    </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+</android.support.constraint.ConstraintLayout>

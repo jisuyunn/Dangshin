@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AnswerActivity">
+<ScrollView
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/spring2">
+        <TextView
+            android:textColor="#251e26"
+            android:textAlignment="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="답변이 완료된 질문입니다.\n혹시라도 악의성 답변으로 의심되는 경우,\n신고 버튼을 눌러주세요."
+            android:fontFamily="@font/jua"
+            android:textSize="15sp"
+            android:letterSpacing="0.07"
+            android:lineSpacingExtra="7dp"
+            android:layout_margin="20dp"
+            android:layout_gravity="center"/>
+        <LinearLayout
+            android:background="#ffffff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:padding="15dp"
+                android:background="@drawable/border"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/answerimage2"
+                    android:scaleType="fitXY"
+                    android:layout_width="300dp"
+                    android:maxHeight="450dp"
+                    android:adjustViewBounds="true"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="5dp" />
+                <LinearLayout
+                    android:id="@+id/recordlinear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:layout_marginTop="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <Button
+                            android:id="@+id/playbutton"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:background="@drawable/selector_stop_play" />
+                        <SeekBar
+                            android:id="@+id/seekbar"
+                            android:layout_width="500dp"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="30dp" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border">
+            <TextView
+                android:textColor="@color/spring2"
+                android:gravity="center"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/jua"
+                android:textSize="20sp"
+                android:id="@+id/answertext2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            </LinearLayout>
+            <Button
+                android:layout_gravity="center"
+                android:id="@+id/reportbutton"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:text="신고하기"
+                android:layout_marginBottom="15dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+</android.support.constraint.ConstraintLayout>
