@@ -196,7 +196,7 @@ public class IntroActivity extends AppCompatActivity {
 
     private Uri getFileUri() {
         // 저장되는 사진 경로
-        String dir_path = "/sdcard/Android/data/com.example.yelimhan.dangshin/";
+        String dir_path = "/sdcard/Android/data/com.example.yelimhan.togetherbom/";
         File dir = new File(dir_path);
         if(!dir.exists()){
             dir.mkdirs();

@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -128,6 +129,7 @@ public class SignInActivity extends AppCompatActivity{
     }
 
 
+    @NonNull
     private Boolean saveUserToDatabase(String pos){
 
         // 파이어베이스에 데이터 넣는 부분(랜덤 키로 push)

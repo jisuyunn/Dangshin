@@ -50,16 +50,25 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -107,6 +116,10 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
     private boolean isPlaying = false;
     private SeekBar seekBar;
     private int duration = 0;
+    String volIndexId = "";
+    String newQuestion = "";
+
+
 
     public static final int RECORD_AUDIO = 0;
     public static final int CUSTOM_CAMERA = 1000;
@@ -340,12 +353,15 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
                     // 데이터베이스에 질문 추가
                     mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-                    String newQuestion = mDatabase.push().getKey();
+                    newQuestion = mDatabase.push().getKey();
                     QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
                     mDatabase.child(newQuestion).setValue(questionInfo);
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
+
+                    sendUrgent();
+
                 }
             } catch (Exception ex) {
                 Log.d("swipe", ex.toString());
@@ -356,7 +372,69 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
     }
 
+    public void sendUrgent() {
+        // 1 긴급 질문 저장
+        // 2 온라인인 봉사자 검색해서 한명 뽑아냄
+        // 3 푸시메세지 보냄 (해당봉사자 info에 질문id 추가)
+        final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
+        final String SERVER_KEY = "AAAAR0VMe3w:APA91bEYVBBHdmhozJLMAsH4ZPxvPvRuUSyPbN9sKh64v7ZktJ2jhc-HCtF12-0Ig-vBK73EUMFaMW93QEehc0V8yDvY-wGalhJJLpDw6X53taufe24R9QmSRJa8UYOCxAWwhhdv-FBA";
 
+        // 2 온라인인 봉사자 검색해서 한명 뽑아냄
+        final DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
+        Query query = table.orderByChild("u_online").equalTo(true);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    UserInfo userInfo = snapshot.getValue(UserInfo.class);          // 온라인 봉사자 랜덤으로 가져오려면 여기 바꿈
+                    Log.d("testt", "selected online volunteer : "+userInfo.u_googleId);
+                    volIndexId = snapshot.getKey().toString();
+
+                    final String usertoken = userInfo.u_token;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                // FMC 메시지 생성 start
+                                JSONObject root = new JSONObject();
+                                JSONObject notification = new JSONObject();
+                                notification.put("body", "지금 알림을 눌러서 긴급한 질문에 답해주세요!");
+                                notification.put("title", getString(R.string.app_name));
+                                root.put("data", notification);
+                                root.put("to", usertoken);
+
+                                //root.put("click_action", "URGENT_PUSH_ACTIVITY");
+                                // FMC 메시지 생성 end
+
+                                Log.d("testt", "vid: "+volIndexId +" , qid: "+ newQuestion);
+                                URL Url = new URL(FCM_MESSAGE_URL);
+                                HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                                conn.setRequestMethod("POST");
+                                conn.setDoOutput(true);
+                                conn.setDoInput(true);
+                                conn.addRequestProperty("Authorization", "key=" + SERVER_KEY);
+                                conn.setRequestProperty("Accept", "application/json");
+                                conn.setRequestProperty("Content-type", "application/json");
+                                OutputStream os = conn.getOutputStream();
+                                os.write(root.toString().getBytes("utf-8"));
+                                os.flush();
+                                conn.getResponseCode();
+                                table.child(volIndexId).child("urgent_qid").setValue(newQuestion);
+                                QuestionAgainActivity.this.finish();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    break;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
     private void goCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE );
         List<ResolveInfo> resolvedIntentActivities = QuestionAgainActivity.this.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
@@ -377,7 +455,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
     private Uri getFileUri() {
         // 저장되는 사진 경로
-        String dir_path = "/sdcard/Android/data/com.example.yelimhan.dangshin/";
+        String dir_path = "/sdcard/Android/data/com.example.yelimhan.togetherbom/";
         File dir = new File(dir_path);
         if(!dir.exists()){
             dir.mkdirs();
@@ -408,6 +486,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                 Toast.makeText(getApplicationContext(), "카메라, 음성녹음, 저장공간 권한이 필요합니다", Toast.LENGTH_SHORT).show();
                 ActivityCompat.requestPermissions( QuestionAgainActivity.this, REQUIRED_PERMISSIONS,1000);
             }else{
+                ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, 1000);
                 ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, 1000);
 
                 //권한설정 dialog에서 거부를 누르면

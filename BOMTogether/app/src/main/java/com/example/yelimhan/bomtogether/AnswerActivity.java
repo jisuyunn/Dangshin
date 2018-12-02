@@ -203,7 +203,7 @@ public class AnswerActivity extends AppCompatActivity {
     // 질문자에게 푸쉬 알람 보내는 함수
     public void sendPushAlert(String answerkey) {
         final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
-        final String SERVER_KEY = "AAAAQjYIgGo:APA91bFDx0BUk2pa77EAAmeAIak73owBnfZbZitHV3G3e7_4_wCSpkv2yqCga0fk03jJ8eTvyxmNv0Oqze0FuzwFDYm9vE_zSrBiLt-tw5RTDX6W6I79pGnU91rTdddbcwaU5qOgIEA-";
+        final String SERVER_KEY = "AAAAR0VMe3w:APA91bEYVBBHdmhozJLMAsH4ZPxvPvRuUSyPbN9sKh64v7ZktJ2jhc-HCtF12-0Ig-vBK73EUMFaMW93QEehc0V8yDvY-wGalhJJLpDw6X53taufe24R9QmSRJa8UYOCxAWwhhdv-FBA";
         FirebaseDatabase.getInstance().getReference("QuestionInfo").child(answerkey)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

@@ -33,7 +33,9 @@ public class QuestionListImageAdapter extends RecyclerView.Adapter<QuestionListI
 
     private Context mContext;
     private ArrayList<QuestionInfo> questionInfos;
-    private StorageReference storageReference = FirebaseStorage.getInstance("gs://dangshin-fa136.appspot.com").getReference();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageReference = storage.getReference();
+    //private StorageReference storageReference = FirebaseStorage.getInstance("gs://bomtogether-5f74b.appspot.com").getReference();
     private Boolean doneFlag;
 
 

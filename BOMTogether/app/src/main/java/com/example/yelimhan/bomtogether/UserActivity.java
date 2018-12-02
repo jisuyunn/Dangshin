@@ -166,12 +166,7 @@ public class UserActivity extends AppCompatActivity {
 
                                 }
                             });
-                            Log.d("testtt", "signin");
-                            Intent intent = new Intent(UserActivity.this, SignInActivity.class);
-                            intent.putExtra("ID", user.getEmail());
-                            startActivity(intent);
-                            overridePendingTransition(0, 0);
-                            UserActivity.this.finish();
+
 
 
                         } else {
