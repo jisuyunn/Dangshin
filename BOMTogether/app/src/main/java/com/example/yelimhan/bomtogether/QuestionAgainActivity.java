@@ -333,7 +333,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
                     // 데이터베이스에 질문 추가
                     mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-                    String newQuestion = mDatabase.push().getKey();
+                    newQuestion = mDatabase.push().getKey();
                     QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
                     mDatabase.child(newQuestion).setValue(questionInfo);
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");

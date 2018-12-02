@@ -53,6 +53,7 @@ public class ListenDoneActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private static final int SWIPE_MIN_DISTANCE = 120;
     GestureDetector detector;
+    public String userIndexId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,8 @@ public class ListenDoneActivity extends AppCompatActivity {
         setContentView(R.layout.activity_listen_done);
         Intent intent = getIntent();
         questionInfo = (QuestionInfo)intent.getSerializableExtra("question");
+        userIndexId = intent.getStringExtra("USERINDEX");
+
 
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -413,7 +416,9 @@ public class ListenDoneActivity extends AppCompatActivity {
                     texttospeechs();
                 } // up to down swipe
                 else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE) {
-                    Intent intent = new Intent(ListenDoneActivity.this, QuestionActivity.class);
+                    Intent intent = new Intent(ListenDoneActivity.this, QuestionAgainActivity.class);
+                    intent.putExtra("USERID",userId);
+                    intent.putExtra("USERINDEX", userIndexId);
                     startActivity(intent);
                     finish();
                 }

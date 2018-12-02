@@ -350,7 +350,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
-                    Log.d("지금", userIndexId);
 
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
