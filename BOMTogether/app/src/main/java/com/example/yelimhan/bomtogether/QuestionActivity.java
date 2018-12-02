@@ -139,6 +139,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         question_layout = findViewById(id.question_layout);
         stage = 0;
 
+
         tts = new TextToSpeech(QuestionActivity.this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -282,6 +283,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
             if(stage == 1){
                 mRecorder.stop();
                 //mRecognizer.stopListening();
+
+
                 isRecording = false;
                 uploadVoiceFile();
 
@@ -588,15 +591,16 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 //                                    RECORD_AUDIO);
 //                        }
 //                    }
-                    initAudioRecorder();
 //                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 //                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
 //                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
 //                    mRecognizer = SpeechRecognizer.createSpeechRecognizer(QuestionActivity.this);
 //                    mRecognizer.setRecognitionListener(listener);
 //                    mRecognizer.startListening(intent);
+                    initAudioRecorder();
                     mRecorder.start();
                     //startActivityForResult(intent, RECORD_AUDIO);
+
                     isRecording = true;
                 }
             }, 12000);
@@ -707,7 +711,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             progressDialog.dismiss(); //업로드 진행 Dialog 상자 닫기
                             Toast.makeText(getApplicationContext(), "업로드 완료!", Toast.LENGTH_SHORT).show();
-
                         }
                     })
                     //실패시
@@ -806,4 +809,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         }
         super.onDestroy();
     }
+
 }
+

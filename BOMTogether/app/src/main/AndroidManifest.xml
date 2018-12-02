@@ -46,7 +46,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".IntroActivity" />
         <activity android:name=".QuestionActivity">
 
         </activity>
@@ -68,7 +67,6 @@
 
         </activity>
         <activity android:name=".QuestionListActivity" />
-        <activity android:name=".RecordActivity" />
         <activity
             android:name=".CustomCameraActivity"
             android:screenOrientation="portrait" />
