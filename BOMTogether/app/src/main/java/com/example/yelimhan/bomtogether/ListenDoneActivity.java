@@ -420,9 +420,10 @@ public class ListenDoneActivity extends AppCompatActivity {
                     texttospeechs();
                 } // up to down swipe
                 else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE) {
-                    Intent intent = new Intent(ListenDoneActivity.this, QuestionAgainActivity.class);
+                    Intent intent = new Intent(ListenDoneActivity.this, QuestionActivity.class);
                     intent.putExtra("USERID",userId);
                     intent.putExtra("USERINDEX", userIndexId);
+                    Log.d("testt", " L D userIndexid : "+userIndexId);
                     startActivity(intent);
                     finish();
                 }

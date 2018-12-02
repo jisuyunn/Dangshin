@@ -872,36 +872,39 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                 delayHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        tts = new TextToSpeech(QuestionAgainActivity.this, new TextToSpeech.OnInitListener() {
-                            @Override
-                            public void onInit(int status) {
-                                if(status != android.speech.tts.TextToSpeech.ERROR) {
-                                    tts.setLanguage(Locale.KOREAN);
+                        if(tts != null){
+                            tts = new TextToSpeech(QuestionAgainActivity.this, new TextToSpeech.OnInitListener() {
+                                @Override
+                                public void onInit(int status) {
+                                    if(status != android.speech.tts.TextToSpeech.ERROR) {
+                                        tts.setLanguage(Locale.KOREAN);
+                                    }
+
+                                    String speach = "에 대한 답변이 아직 없습니다. 화면을 아래에서 위로 올리면 다시 질문할 수 있어요!";
+                                    tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
+
+                                    if(status == TextToSpeech.SUCCESS) {
+                                        tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                                            @Override
+                                            public void onStart(String utteranceId) {
+
+                                            }
+
+                                            @Override
+                                            public void onDone(String Id) {
+
+                                            }
+
+                                            @Override
+                                            public void onError(String utteranceId) {
+
+                                            }
+                                        });
+                                    }
                                 }
+                            });
+                        }
 
-                                String speach = "에 대한 답변이 아직 없습니다. 화면을 아래에서 위로 올리면 다시 질문할 수 있어요!";
-                                tts.speak(speach, TextToSpeech.QUEUE_FLUSH, null);
-
-                                if(status == TextToSpeech.SUCCESS) {
-                                    tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                                        @Override
-                                        public void onStart(String utteranceId) {
-
-                                        }
-
-                                        @Override
-                                        public void onDone(String Id) {
-
-                                        }
-
-                                        @Override
-                                        public void onError(String utteranceId) {
-
-                                        }
-                                    });
-                                }
-                            }
-                        });
                     }
                 }, duration);
             }

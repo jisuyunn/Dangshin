@@ -3,9 +3,6 @@ package com.example.yelimhan.bomtogether;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.drm.DrmStore;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -38,8 +34,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import java.io.BufferedOutputStream;
 
 public class QuestionListActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,NavigationView.OnNavigationItemSelectedListener{
 
@@ -125,7 +119,7 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
             }
             // 내 답변목록
             case R.id.menu_answer: {
-                Intent intent = new Intent(this, AnswerListActivity.class);
+                Intent intent = new Intent(this, FavoriteActivity.class);
                 intent.putExtra("userKey", userIndexId);
                 startActivity(intent);
                 break;
