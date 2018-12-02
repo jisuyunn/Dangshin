@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -54,6 +55,7 @@ public class ListenDoneActivity extends AppCompatActivity {
     private static final int SWIPE_MIN_DISTANCE = 120;
     GestureDetector detector;
     public String userIndexId = "";
+    public TextView emailView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,8 @@ public class ListenDoneActivity extends AppCompatActivity {
         questionInfo = (QuestionInfo)intent.getSerializableExtra("question");
         userIndexId = intent.getStringExtra("USERINDEX");
 
+        emailView = findViewById(R.id.email_id);
+        emailView.setText("ID : " + userId);
 
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();

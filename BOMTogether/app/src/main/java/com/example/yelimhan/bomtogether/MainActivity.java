@@ -199,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                     Intent it = new Intent(MainActivity.this,ListenDoneActivity.class);
                                                     Bundle bundle = new Bundle();
                                                     bundle.putSerializable("question",questionInfo);
+                                                    it.putExtra("USERID", userId);
                                                     it.putExtras(bundle);
                                                     startActivity(it);
                                                     finish();

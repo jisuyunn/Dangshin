@@ -80,10 +80,11 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
     public TextView textView;
     public ImageView imageView;
     public LinearLayout question_layout;
+    public TextView emailView;
     private static final int SWIPE_MIN_DISTANCE = 120;
     GestureDetector detector;
     String userId = "";
-    String userq_key = "";
+    String user_mail = "";
     String volIndexId = "";
     String newQuestion = "";
 
@@ -121,6 +122,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
         Intent it = getIntent();
         userIndexId = it.getStringExtra("USERINDEX");
+        user_mail = it.getStringExtra("USERID");
+
         Log.d("testt", "QA userindexid : "+userIndexId);
 
         mAuth = FirebaseAuth.getInstance();
@@ -136,6 +139,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         bt = (Button) findViewById(id.logout);
         textView = findViewById(id.textView);
         imageView = findViewById(id.imageView);
+        emailView = findViewById(id.mail_id);
+        emailView.setText("ID : " + user_mail);
         question_layout = findViewById(id.question_layout);
         stage = 0;
 

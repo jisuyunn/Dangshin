@@ -87,6 +87,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
     private StorageReference storageReference = FirebaseStorage.getInstance("gs://bomtogether-5f74b.appspot.com").getReference();
     public Button bt;
     public TextView textView;
+    public TextView emailView;
     public ImageView imageView;
     public LinearLayout question_layout;
     private static final int SWIPE_MIN_DISTANCE = 120;
@@ -135,6 +136,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
         Intent it = getIntent();
         userIndexId = it.getStringExtra("USERINDEX");
+        userId = it.getStringExtra("USERID");
         voice_file = it.getStringExtra("VOICE");
         Log.d("testt", "QA userindexid : "+userIndexId);
         mAuth = FirebaseAuth.getInstance();
@@ -151,13 +153,13 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
         textView = findViewById(id.textView);
         imageView = findViewById(id.imageView);
         question_layout = findViewById(id.question_layout);
+        emailView = findViewById(id.mail_id);
+        emailView.setText("ID : " + userId);
         stage = 0;
 
         setMediaPlayer();
         //mediaPlayer.start();
         textView.setText("질문에 대한 답변이 아직 없습니다.\n\n화면을 아래에서 위로 올리면\n다시 질문할 수 있어요!");
-
-
 
 
         mRecorder = new MediaRecorder();

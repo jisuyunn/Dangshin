@@ -49,29 +49,40 @@
         <activity android:name=".QuestionActivity">
 
         </activity>
-        <activity android:name=".QuestionAgainActivity" />
-        <activity android:name=".AnswerActivity" >
+        <activity android:name=".QuestionAgainActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".AnswerActivity"
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".UserActivity" />
-        <activity android:name=".ReportActivity" />
-        <activity android:name=".AnswerListActivity" />
-        <activity android:name=".ListenActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".UserActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ReportActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AnswerListActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ListenActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignInActivity">
+        <activity android:name=".SignInActivity"
+            android:screenOrientation="portrait">
 
         </activity>
-        <activity android:name=".QuestionListActivity" />
+        <activity android:name=".QuestionListActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".CustomCameraActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ListenDoneActivity"></activity>
-        <activity android:name=".ImageManager"/>
+        <activity android:name=".ListenDoneActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".ImageManager"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
