@@ -169,7 +169,6 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for(DataSnapshot child : dataSnapshot.getChildren()){
                         userIndexId = child.getKey().toString();
-                        Log.d("testt", " Q L A ondatachanged  "+ userIndexId + "   "+String.valueOf(flag));
                     }
                 }
 
@@ -184,7 +183,6 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
 
     private void setupViewPager(ViewPager viewPager) {
 
-        Log.d("testt", "   setupviewpager");
 
         adapter = new QuestionListAdapter(getSupportFragmentManager());
         qlFragment = new QuestionListFragment();
@@ -241,31 +239,15 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
         updateReference = FirebaseDatabase.getInstance().getReference("UserInfo");
 
         updateReference.child(userIndexId).child("u_online").setValue(false);
-        Toast.makeText(this, "종료",Toast.LENGTH_SHORT).show();
 
 
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d("testt", " Q L A onPause");
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("testt", " Q L A onResume");
-
-    }
 
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("testt", " Q L A onStart");
-
         if(!firstTime) {
             qlFragment.getFirstFirebaseData();
             qdlFragment.getFirstFirebaseData();
@@ -275,12 +257,8 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
     @Override
     public void onStop() {
         super.onStop();
-
         firstTime = false;
         flag = false;
-
-        Log.d("testt", " Q L A onStop   "+String.valueOf(flag));
-
     }
 
 
@@ -290,20 +268,20 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
         if(drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            long tempTime = System.currentTimeMillis();
+            long intervalTime = tempTime - backPressedTime;
+
+            if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime)
+            {
+                super.onBackPressed();
+            }
+            else
+            {
+                backPressedTime = tempTime;
+                Toast.makeText(getApplicationContext(), "한번 더 뒤로가기 버튼을 누르면 종료합니다", Toast.LENGTH_SHORT).show();
+            }
         }
-//        long tempTime = System.currentTimeMillis();
-//        long intervalTime = tempTime - backPressedTime;
-//
-//        if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime)
-//        {
-//            super.onBackPressed();
-//        }
-//        else
-//        {
-//            backPressedTime = tempTime;
-//            Toast.makeText(getApplicationContext(), "한번 더 뒤로가기 누르면 꺼집니다", Toast.LENGTH_SHORT).show();
-//        }
+
     }
 
 

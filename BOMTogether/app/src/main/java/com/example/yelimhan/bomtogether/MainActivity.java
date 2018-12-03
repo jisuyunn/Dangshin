@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                         userIndexId = snapshot.getKey().toString();
                         UserInfo ui = snapshot.getValue(UserInfo.class);
-                        Log.d("testt","user : " + userIndexId);
 
                         if(ui.u_position.equals("Volunteer")){      // 접속한 사용자가 봉사자일 경우
                             DatabaseReference updateReference;
@@ -115,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                     for(DataSnapshot child : dataSnapshot.getChildren()){
                                         child.getRef().child("u_online").setValue(true);
                                         qid = child.getRef().child("urgent_qid").toString();
-                                        Log.d("testt", "urgent qid : "+qid);
                                         if(!qid.equals("")){
                                             DatabaseReference uqidReference;
                                             uqidReference = FirebaseDatabase.getInstance().getReference("QuestionInfo");
@@ -128,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                         Intent intent = new Intent(MainActivity.this, AnswerActivity.class);
                                                         Bundle bundle = new Bundle();
                                                         bundle.putSerializable("question", qi);
-                                                        Log.d("testt", "query qid success: "+qid);
                                                         intent.putExtras(bundle);
                                                         MainActivity.this.startActivity(intent);
                                                     }
@@ -200,6 +197,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                     Bundle bundle = new Bundle();
                                                     bundle.putSerializable("question",questionInfo);
                                                     it.putExtra("USERID", userId);
+                                                    it.putExtra("USERINDEX", userIndexId);
+                                                    Log.d("testt", "Main have 2 indexid : "+userIndexId);
                                                     it.putExtras(bundle);
                                                     startActivity(it);
                                                     finish();

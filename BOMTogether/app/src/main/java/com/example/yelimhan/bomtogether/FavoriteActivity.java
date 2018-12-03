@@ -85,12 +85,11 @@ public class FavoriteActivity extends AppCompatActivity {
 
                                 // 시각장애인의 즐겨찾기에 봉사자 추가
                                 blindIndexId = snapshot.getKey().toString();
-                                Toast.makeText(getApplicationContext(),blindIndexId,Toast.LENGTH_SHORT).show();
-                                Log.d("testt", blindIndexId);
                                 DatabaseReference blindRef = FirebaseDatabase.getInstance().getReference("UserInfo").child(blindIndexId).child("u_favorite").push();
                                 blindRef.setValue(userId);
 
                                 editText.setText("");
+                                loadItemsFromDB();
                             }
                             else {
                                 Toast.makeText(getApplicationContext(),"잘못된 입력입니다", Toast.LENGTH_SHORT).show();
@@ -117,28 +116,27 @@ public class FavoriteActivity extends AppCompatActivity {
         int i;
         if (items == null) {
             items = new ArrayList<FavoriteListItem>();
-        }
+        }else
+            items.clear();
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
         Query query = mDatabase.orderByChild("u_googleId").equalTo(userId);
-
-
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     String fl = snapshot.getKey().toString();
-                    DatabaseReference db = FirebaseDatabase.getInstance().getReference("UserInfo").child(userId).child(fl);
+                    DatabaseReference db = FirebaseDatabase.getInstance().getReference("UserInfo").child(fl).child("u_favorite");
                     Query q1 = db.orderByValue();
                     q1.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                FavoriteListItem item = null;
+                                FavoriteListItem item = new FavoriteListItem();
                                 item.setText(snapshot.getValue().toString());
-                                Log.d("test", snapshot.getValue().toString());
+                                Log.d("testt", "item set text  / "+snapshot.getValue().toString());
                                 items.add(item);
                             }
                         }

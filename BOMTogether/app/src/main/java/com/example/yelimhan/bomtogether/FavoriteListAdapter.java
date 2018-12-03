@@ -1,6 +1,7 @@
 package com.example.yelimhan.bomtogether;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +57,7 @@ public class FavoriteListAdapter extends ArrayAdapter {
 
         textTextView.setText(listViewItem.getText());
 
-        Button button1 = (Button) convertView.findViewById(R.id.fbtn);
+        ImageButton button1 = (ImageButton) convertView.findViewById(R.id.fbtn);
         button1.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Toast.makeText(getContext(), Integer.toString(pos+1)+"번 아이템 눌림",Toast.LENGTH_SHORT).show();

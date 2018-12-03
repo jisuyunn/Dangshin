@@ -5,7 +5,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#f8f8f8"
     tools:context=".FavoriteActivity">
+
+    <LinearLayout
+        android:layout_marginBottom="10dp"
+        android:elevation="5dp"
+        android:background="@color/spring2"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/pupBlack"
+            android:fontFamily="@font/jua"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="25dp"
+            android:textAlignment="center"
+            android:textSize="30dp"
+            android:text="관심 목록"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textColor="@color/pupBlack"
+            android:lineSpacingExtra="7dp"
+            android:textSize="17dp"
+            android:fontFamily="@font/jua"
+            android:text="관심 목록에 등록된 시각장애인이 질문을 올릴 경우\n알림이 와서 빠르게 답변을 줄 수 있어요!"
+            android:textAlignment="center"
+            android:layout_marginBottom="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 
 
@@ -21,23 +51,29 @@
             android:layout_height="wrap_content">
 
             <EditText
+                android:padding="8sp"
                 android:id="@+id/edittext"
-                android:hint="시각장애인의 아이디를 입력해주세요"
-                android:textSize="18sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jua"
+                android:hint="시각장애인의 아이디를 입력해주세요　"
+                android:textSize="21sp"
+                android:theme="@style/EditTheme" />
             <ImageButton
                 android:id="@+id/btn"
                 android:layout_margin="4dp"
                 android:background="#00ffffff"
                 android:scaleType="fitCenter"
-                android:src="@drawable/plus"
+                android:src="@drawable/addd"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
         </LinearLayout>
 
 
         <ListView
+            android:paddingBottom="10dp"
+            android:dividerHeight="5dp"
+            android:divider="#00f8f8f8"
             android:id="@+id/listview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">

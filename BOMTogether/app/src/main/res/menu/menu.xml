@@ -8,8 +8,8 @@
             android:title="내 계정"
             android:icon="@drawable/ic_person_black_24dp" />
         <item android:id="@+id/menu_answer"
-            android:title="내 답변"
-            android:icon="@drawable/ic_question_answer_black_24dp" />
+            android:title="관심 목록"
+            android:icon="@drawable/favorites" />
     </group>
     <item android:title="DangShin">
         <menu>

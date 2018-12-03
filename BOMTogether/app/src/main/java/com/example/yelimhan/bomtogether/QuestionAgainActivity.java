@@ -341,8 +341,8 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
-                    Log.d("지금", userIndexId);
 
+                    sendPushToFavorite();
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
                     //Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
@@ -362,7 +362,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
 
-                    sendUrgent();
+                    sendUrgentPush();
 
                 }
             } catch (Exception ex) {
@@ -373,8 +373,81 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
         }
 
     }
+    public void sendPushToFavorite(){
+        final String FCM_MESSAGE_URL = "https://fcm.googleapis.com/fcm/send";
+        final String SERVER_KEY = "AAAAR0VMe3w:APA91bEYVBBHdmhozJLMAsH4ZPxvPvRuUSyPbN9sKh64v7ZktJ2jhc-HCtF12-0Ig-vBK73EUMFaMW93QEehc0V8yDvY-wGalhJJLpDw6X53taufe24R9QmSRJa8UYOCxAWwhhdv-FBA";
 
-    public void sendUrgent() {
+        mDatabase = FirebaseDatabase.getInstance().getReference("UserInfo");
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference("UserInfo").child(userIndexId).child("u_favorite");
+        Query q1 = db.orderByValue();
+        q1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String fVolId = snapshot.getValue().toString();
+                    Query query = mDatabase.orderByChild("u_googleId").equalTo(fVolId);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                UserInfo userInfo = snapshot.getValue(UserInfo.class);          // 온라인 봉사자 랜덤으로 가져오려면 여기 바꿈
+                                Log.d("testt", "selected favorite volunteer : "+userInfo.u_googleId);
+                                volIndexId = snapshot.getKey().toString();
+
+                                final String usertoken = userInfo.u_token;
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            // FMC 메시지 생성 start
+                                            JSONObject root = new JSONObject();
+                                            JSONObject notification = new JSONObject();
+                                            notification.put("body", "지금 알림을 눌러서 질문에 답해주세요!");
+                                            notification.put("title", getString(R.string.app_name));
+                                            root.put("data", notification);
+                                            root.put("to", usertoken);
+
+                                            //root.put("click_action", "URGENT_PUSH_ACTIVITY");
+                                            // FMC 메시지 생성 end
+
+                                            URL Url = new URL(FCM_MESSAGE_URL);
+                                            HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                                            conn.setRequestMethod("POST");
+                                            conn.setDoOutput(true);
+                                            conn.setDoInput(true);
+                                            conn.addRequestProperty("Authorization", "key=" + SERVER_KEY);
+                                            conn.setRequestProperty("Accept", "application/json");
+                                            conn.setRequestProperty("Content-type", "application/json");
+                                            OutputStream os = conn.getOutputStream();
+                                            os.write(root.toString().getBytes("utf-8"));
+                                            os.flush();
+                                            conn.getResponseCode();
+                                            QuestionAgainActivity.this.finish();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }).start();
+                                break;
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    public void sendUrgentPush() {
         // 1 긴급 질문 저장
         // 2 온라인인 봉사자 검색해서 한명 뽑아냄
         // 3 푸시메세지 보냄 (해당봉사자 info에 질문id 추가)

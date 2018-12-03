@@ -20,7 +20,7 @@
             android:id="@+id/text3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="25dp"
             android:fontFamily="@font/jua"
             android:letterSpacing="0.07"
             android:lineSpacingExtra="7dp"
