@@ -693,7 +693,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                     //startActivityForResult(intent, RECORD_AUDIO);
                     isRecording = true;
                 }
-            }, 12000);
+            }, 13000);
         }
 
 
