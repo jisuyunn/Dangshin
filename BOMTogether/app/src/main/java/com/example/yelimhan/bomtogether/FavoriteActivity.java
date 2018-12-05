@@ -1,6 +1,7 @@
 package com.example.yelimhan.bomtogether;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +51,8 @@ public class FavoriteActivity extends AppCompatActivity {
         userId = user.getEmail();
 
         ////////intent에서 받아와야함
-        userIndexId = "-LSh0D6mj-ZxOmNbWyrF";
+        Intent intent = getIntent();
+        userIndexId = intent.getStringExtra("USERINDEX");
 
         ListView listView;
         FavoriteListAdapter adapter;

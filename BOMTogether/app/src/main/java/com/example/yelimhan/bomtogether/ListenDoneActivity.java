@@ -64,6 +64,7 @@ public class ListenDoneActivity extends AppCompatActivity {
         Intent intent = getIntent();
         questionInfo = (QuestionInfo)intent.getSerializableExtra("question");
         userIndexId = intent.getStringExtra("USERINDEX");
+        userId = intent.getStringExtra("USERID");
         Log.d("testt", "Listen done indexid : "+userIndexId);
 
         emailView = findViewById(R.id.email_id);

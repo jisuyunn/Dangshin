@@ -120,7 +120,7 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
             // 내 답변목록
             case R.id.menu_answer: {
                 Intent intent = new Intent(this, FavoriteActivity.class);
-                intent.putExtra("userKey", userIndexId);
+                intent.putExtra("USERINDEX", userIndexId);
                 startActivity(intent);
                 break;
             }
