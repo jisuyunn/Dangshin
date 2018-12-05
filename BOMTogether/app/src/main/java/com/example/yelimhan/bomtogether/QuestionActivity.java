@@ -212,7 +212,6 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         // 현재 접속중인 사용자의 정보를 받아옴. 없으면 null
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         final DatabaseReference table = FirebaseDatabase.getInstance().getReference("UserInfo");
-        userId = user.getEmail();
 
         detector = new GestureDetector(this, new GestureAdapter());
     }
@@ -683,7 +682,7 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
 
                     isRecording = true;
                 }
-            }, 12000);
+            }, 13000);
         }
     }
 
