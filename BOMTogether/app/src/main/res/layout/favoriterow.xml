@@ -14,7 +14,7 @@
         android:layout_margin="10sp"
         android:fontFamily="@font/dxgpgb"
         android:text="등록된 시각장애인이 없습니다."
-        android:textSize="22sp"
+        android:textSize="18sp"
         android:id="@+id/flisttext"
         android:layout_width="315dp"
         android:layout_height="wrap_content" />

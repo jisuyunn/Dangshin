@@ -45,18 +45,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
+            android:padding="5dp"
+            android:background="@drawable/list_border"
             android:layout_marginBottom="20dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <EditText
-                android:padding="8sp"
+                android:paddingLeft="8dp"
+                android:paddingBottom="11dp"
+                android:paddingTop="11dp"
                 android:id="@+id/edittext"
-                android:layout_width="300dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/jua"
-                android:hint="시각장애인의 아이디를 입력해주세요　"
+                android:hint="시각장애인의 아이디를 입력해주세요"
                 android:textSize="21sp"
                 android:theme="@style/EditTheme" />
             <ImageButton
@@ -65,10 +69,17 @@
                 android:background="#00ffffff"
                 android:scaleType="fitCenter"
                 android:src="@drawable/addd"
-                android:layout_width="wrap_content"
+                android:layout_width="20dp"
                 android:layout_height="match_parent" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_marginBottom="20dp"
+            android:background="@color/spring2"
+            android:layout_width="match_parent"
+            android:layout_height="2dp">
+
+        </LinearLayout>
 
         <ListView
             android:paddingBottom="10dp"

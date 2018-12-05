@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                                         bundle.putSerializable("question", qi);
                                                         intent.putExtras(bundle);
                                                         MainActivity.this.startActivity(intent);
+                                                        finish();
                                                     }
                                                 }
 
