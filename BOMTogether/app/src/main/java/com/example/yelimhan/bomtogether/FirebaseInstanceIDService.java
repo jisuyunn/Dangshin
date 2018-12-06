@@ -27,22 +27,25 @@ public class FirebaseInstanceIDService extends FirebaseInstanceIdService {
     }
     private void sendRegistrationToServer(final String token) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final String userId = user.getEmail();
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("UserInfo");
-        ref.orderByChild("u_googleId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    ref.child(snapshot.getKey()).child("u_token").setValue(token);
+        if(user!= null){
+            final String userId = user.getEmail();
+            final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("UserInfo");
+            ref.orderByChild("u_googleId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        ref.child(snapshot.getKey()).child("u_token").setValue(token);
+                    }
+
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }
 
-            }
-        });
     }
 }
 

@@ -157,6 +157,7 @@ public class ListenDoneActivity extends AppCompatActivity {
 
                                         @Override
                                         public void onDone(String Id) {
+                                            tts.setSpeechRate(1f);
                                             ttsGreater21("다시 들으시려면 화면을 위로 밀어주세요! 새로 질문하시려면 화면을 아래로 밀어주세요.");
                                         }
 
@@ -278,8 +279,10 @@ public class ListenDoneActivity extends AppCompatActivity {
                     tts.setLanguage(Locale.KOREA);
                     // tts 한번만 읽어줌
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        tts.setSpeechRate(0.8f);
                         ttsGreater21(text);
                     } else {
+                        tts.setSpeechRate(0.8f);
                         ttsUnder20(text);
                     }
                 }
@@ -293,6 +296,7 @@ public class ListenDoneActivity extends AppCompatActivity {
                         @Override
                         public void onDone(String Id) {
                             if(Id.equals(utteranceId)) {
+                                tts.setSpeechRate(1f);
                                 ttsGreater21("다시 들으시려면 화면을 위로 밀어주세요! 새로 질문하시려면 화면을 아래로 밀어주세요.");
                                 utteranceId = "";
                             }
@@ -423,15 +427,14 @@ public class ListenDoneActivity extends AppCompatActivity {
                 double distanceY = Math.abs(e1.getY() - e2.getY());
 
                 if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE) {
-                    mVibe.vibrate(400);
+                    //mVibe.vibrate(300);
                     texttospeechs();
                 } // up to down swipe
                 else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE) {
-                    mVibe.vibrate(400);
+                    //mVibe.vibrate(300);
                     Intent intent = new Intent(ListenDoneActivity.this, QuestionActivity.class);
                     intent.putExtra("USERID",userId);
                     intent.putExtra("USERINDEX", userIndexId);
-                    Log.d("testt", " L D userIndexid : "+userIndexId);
                     startActivity(intent);
                     finish();
                 }

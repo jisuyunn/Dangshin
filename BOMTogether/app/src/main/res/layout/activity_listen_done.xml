@@ -26,12 +26,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="100sp"
-            android:fontFamily="@font/dxgpgb"
+            android:fontFamily="@font/jua"
             android:gravity="center"
             android:lineSpacingExtra="8dp"
             android:text="질문에 답이 달렸어요! \n 다시 들으시려면\n화면을 위로 밀어주세요.\n\n 새로 질문하시려면 \n화면을 아래로 밀어주세요."
             android:textColor="#463b4f"
-            android:textSize="25dp" />
+            android:textSize="35dp" />
 
         <LinearLayout
             android:id="@+id/recordlinear"

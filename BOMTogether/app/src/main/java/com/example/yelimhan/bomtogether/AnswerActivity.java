@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,6 +51,7 @@ public class AnswerActivity extends AppCompatActivity {
     private boolean isPrepared = false;
     private UserInfo userInfo;
     private SeekBar seekBar;
+    String userIndexId ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class AnswerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_answer);
         Intent intent = getIntent();
         questionInfo = (QuestionInfo) intent.getSerializableExtra("question");
+        userIndexId = intent.getStringExtra("USERINDEX");
         imageView = findViewById(R.id.answerimage);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,10 +112,14 @@ public class AnswerActivity extends AppCompatActivity {
                     mDatabase.child(newAnswer).setValue(answerInfo);
                     mDatabase = FirebaseDatabase.getInstance().getReference("QuestionInfo");
                     mDatabase.child(questionInfo.q_id).child("checkAnswer").setValue(true);
-
+                    DatabaseReference userRef;
+                    userRef = FirebaseDatabase.getInstance().getReference("UserInfo");
+                    userRef.child(userIndexId).child("urgent_qid").setValue("");
                     // startActivity(new Intent(AnswerActivity.this,QuestionListActivity.class));
                     // 질문자에게 푸쉬 알람 보내는 함수
                     sendPushAlert(questionInfo.q_id);
+                    Toast.makeText(getApplicationContext(), "답변이 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                    AnswerActivity.this.finish();
                 }
             }
         });
@@ -211,6 +218,7 @@ public class AnswerActivity extends AppCompatActivity {
 
                     QuestionInfo questionInfo = dataSnapshot.getValue(QuestionInfo.class);
                     String writer = questionInfo.q_writer;
+                    Log.d("testt", "writer : " +    writer);
                     FirebaseDatabase.getInstance().getReference("UserInfo")
                             .orderByChild("u_googleId").equalTo(writer)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -218,10 +226,13 @@ public class AnswerActivity extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                         String userkey = snapshot.getKey();
+                                        Log.d("testt", "userkey : "+userkey);
                                         FirebaseDatabase.getInstance().getReference("UserInfo").child(userkey).child("u_haveQuestion").setValue(2);
                                         UserInfo userInfo = snapshot.getValue(UserInfo.class);
 
                                         final String usertoken = userInfo.u_token;
+                                        Log.d("testt", "usertoken : "+userInfo.u_token);
+
                                         new Thread(new Runnable() {
                                             @Override
                                             public void run() {
@@ -247,7 +258,6 @@ public class AnswerActivity extends AppCompatActivity {
                                                     os.write(root.toString().getBytes("utf-8"));
                                                     os.flush();
                                                     conn.getResponseCode();
-                                                    AnswerActivity.this.finish();
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }

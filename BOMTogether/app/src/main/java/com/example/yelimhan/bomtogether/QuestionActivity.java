@@ -123,6 +123,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
         Intent it = getIntent();
         userIndexId = it.getStringExtra("USERINDEX");
         user_mail = it.getStringExtra("USERID");
+        userId = it.getStringExtra("USERID");
+
         Log.d("testt", "QA userindexid : "+userIndexId);
 
         mAuth = FirebaseAuth.getInstance();
@@ -354,12 +356,8 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                     QuestionInfo questionInfo = new QuestionInfo(newQuestion, storagePath, storageVPath, userId, "stt", urgent_flag);
                     mDatabase.child(newQuestion).setValue(questionInfo);
                     DatabaseReference userR = FirebaseDatabase.getInstance().getReference("UserInfo");
-                    Log.d("testt", "QQ userindexid : "+userIndexId);
-                    Log.d("testt", "QQ userR : "+userR.toString());
-
                     userR.child(userIndexId).child("q_key").setValue(newQuestion);
                     userR.child(userIndexId).child("u_haveQuestion").setValue(1);
-
                     sendPushToFavorite();
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
@@ -441,7 +439,9 @@ public class QuestionActivity extends AppCompatActivity implements GoogleApiClie
                                             os.write(root.toString().getBytes("utf-8"));
                                             os.flush();
                                             conn.getResponseCode();
+                                            mDatabase.child(volIndexId).child("urgent_qid").setValue(newQuestion);
                                             QuestionActivity.this.finish();
+
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }

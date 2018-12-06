@@ -163,6 +163,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
         setMediaPlayer();
         //mediaPlayer.start();
         textView.setText("질문에 대한 답변이 아직 없습니다.\n\n화면을 아래에서 위로 올리면\n다시 질문할 수 있어요!");
+        tts.speak("질문에 대한 답변이 아직 없습니다. 화면을 아래에서 위로 올리면 다시 질문할 수 있어요!", TextToSpeech.QUEUE_FLUSH, null);
 
 
         mRecorder = new MediaRecorder();
@@ -427,6 +428,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                                             os.write(root.toString().getBytes("utf-8"));
                                             os.flush();
                                             conn.getResponseCode();
+                                            mDatabase.child(volIndexId).child("urgent_qid").setValue(newQuestion);
                                             QuestionAgainActivity.this.finish();
                                         } catch (Exception e) {
                                             e.printStackTrace();

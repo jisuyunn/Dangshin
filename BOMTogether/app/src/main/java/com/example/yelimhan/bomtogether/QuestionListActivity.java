@@ -1,5 +1,6 @@
 package com.example.yelimhan.bomtogether;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.drm.DrmStore;
@@ -51,13 +52,25 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
     public DrawerLayout drawerLayout;
     public NavigationView navigationView;
     private Button nav_button;
+    private QuestionInfo questionInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question_list);
 
-        Log.d("testt", " Q L A onCreate");
+
+        Intent intent = getIntent();
+        questionInfo = (QuestionInfo) intent.getSerializableExtra("question");
+        userIndexId = intent.getStringExtra("USERINDEX");
+        if(questionInfo != null){
+            Intent it = new Intent(QuestionListActivity.this, AnswerActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("question", questionInfo);
+            it.putExtra("USERINDEX",userIndexId);
+            it.putExtras(bundle);
+            QuestionListActivity.this.startActivity(it);
+        }
 
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder
@@ -77,7 +90,6 @@ public class QuestionListActivity extends AppCompatActivity implements GoogleApi
         else
             Toast.makeText(this, "로그인 정보가 없습니다!", Toast.LENGTH_SHORT).show();
 
-        getUserIndexId();
 
         //Toast.makeText(this, "봉사자 - 질문 선택",Toast.LENGTH_SHORT).show();
         // 탭바 생성

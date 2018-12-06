@@ -61,7 +61,7 @@ public class PushMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, "봄")
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.bomicon2)
                         //.setContentTitle("알림 도착")
                         .setContentText(messageBody)
                         .setAutoCancel(true)

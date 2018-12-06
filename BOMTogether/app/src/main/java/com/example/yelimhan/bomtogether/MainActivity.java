@@ -103,51 +103,44 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                         userIndexId = snapshot.getKey().toString();
                         UserInfo ui = snapshot.getValue(UserInfo.class);
-
                         if(ui.u_position.equals("Volunteer")){      // 접속한 사용자가 봉사자일 경우
-                            DatabaseReference updateReference;
-                            updateReference = FirebaseDatabase.getInstance().getReference("UserInfo");
-                            final Query query = updateReference.orderByChild("u_googleId").equalTo(userId);
-                            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for(DataSnapshot child : dataSnapshot.getChildren()){
-                                        child.getRef().child("u_online").setValue(true);
-                                        qid = child.getRef().child("urgent_qid").toString();
-                                        if(!qid.equals("")){
-                                            DatabaseReference uqidReference;
-                                            uqidReference = FirebaseDatabase.getInstance().getReference("QuestionInfo");
-                                            Query query1 = uqidReference.orderByChild("q_id").equalTo(qid);
-                                            query1.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                                        QuestionInfo qi  = snapshot.getValue(QuestionInfo.class);
-                                                        Intent intent = new Intent(MainActivity.this, AnswerActivity.class);
-                                                        Bundle bundle = new Bundle();
-                                                        bundle.putSerializable("question", qi);
-                                                        intent.putExtras(bundle);
-                                                        MainActivity.this.startActivity(intent);
-                                                        finish();
-                                                    }
-                                                }
+                            qid = ui.urgent_qid;
+                            snapshot.getRef().child("u_online").setValue(true);
+                            if(!qid.equals("")){
+                                DatabaseReference uqidReference;
+                                uqidReference = FirebaseDatabase.getInstance().getReference("QuestionInfo");
+                                Query query1 = uqidReference.orderByKey().equalTo(qid);
+                                query1.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            QuestionInfo qi  = snapshot.getValue(QuestionInfo.class);
+                                            Log.d("testt", "qi : "+qi.toString());
+                                            Intent intent = new Intent(MainActivity.this, QuestionListActivity.class);
+                                            Bundle bundle = new Bundle();
+                                            bundle.putSerializable("question", qi);
+                                            intent.putExtras(bundle);
+                                            intent.putExtra("USERINDEX", userIndexId);
+                                            intent.putExtra("URGENTQID", qid);
 
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                }
-                                            });
-
+                                            MainActivity.this.startActivity(intent);
+                                            finish();
                                         }
                                     }
-                                }                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                }
-                            });
 
-                            Intent it = new Intent(MainActivity.this,QuestionListActivity.class);
-                            startActivity(it);
-                            finish();
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                            }else{
+                                Intent intent = new Intent(MainActivity.this, QuestionListActivity.class);
+                                intent.putExtra("USERINDEX", userIndexId);
+                                MainActivity.this.startActivity(intent);
+                                finish();
+                            }
+
                         }
                         else if(ui.u_position.equals("Blind")){     // 접속한 사용자가 시각장애인일 경우
 
