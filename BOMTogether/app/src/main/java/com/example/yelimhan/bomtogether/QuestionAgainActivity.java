@@ -3,6 +3,7 @@ package com.example.yelimhan.bomtogether;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -119,7 +121,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
     private int duration = 0;
     String volIndexId = "";
     String newQuestion = "";
-
+    public Vibrator mVibe;
 
 
     public static final int RECORD_AUDIO = 0;
@@ -134,6 +136,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
         permissionCheck();
 
+        mVibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
         Intent it = getIntent();
         userIndexId = it.getStringExtra("USERINDEX");
         userId = it.getStringExtra("USERID");
@@ -275,7 +278,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                 //mRecognizer.stopListening();
                 isRecording = false;
                 uploadVoiceFile();
-
+                mVibe.vibrate(400);
                 stage = 2;
                 question_layout.setBackgroundResource(R.drawable.gradient5);
                 textView.setText("질문이 긴급하신가요?\n 그렇다면 화면을 아래에서로\n위로 올려주세요.\n\n긴급이 아니라면 화면을\n위에서 아래로 내려주세요.");
@@ -326,6 +329,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
 
                 } // up to down swipe
                 else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && stage == 2) {
+                    mVibe.vibrate(1000);
                     question_layout.setBackgroundColor(Color.rgb(225, 191, 224));
                     textView.setText("질문 등록이 완료되었습니다.\n답변이 오면 알려드릴게요!");
                     String speech = "질문 등록이 완료되었습니다.\n\n답변이 오면 알려드릴게요!";
@@ -345,6 +349,7 @@ public class QuestionAgainActivity extends AppCompatActivity implements GoogleAp
                     sendPushToFavorite();
                 }
                 else if(e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && stage == 2){
+                    mVibe.vibrate(1000);
                     //Toast.makeText(getApplicationContext(), "Swipe Down", Toast.LENGTH_SHORT).show();
                     question_layout.setBackgroundColor(Color.rgb(225, 191, 224));
                     textView.setText("긴급 질문 등록이\n완료되었습니다.\n\n답변이 오면 알려드릴게요!");

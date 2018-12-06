@@ -16,6 +16,7 @@
         android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USER_FULL" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"

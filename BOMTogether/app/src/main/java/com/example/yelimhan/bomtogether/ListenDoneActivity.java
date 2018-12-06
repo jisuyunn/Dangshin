@@ -2,11 +2,13 @@ package com.example.yelimhan.bomtogether;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
@@ -56,6 +58,7 @@ public class ListenDoneActivity extends AppCompatActivity {
     GestureDetector detector;
     public String userIndexId = "";
     public TextView emailView;
+    public Vibrator mVibe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class ListenDoneActivity extends AppCompatActivity {
         userId = intent.getStringExtra("USERID");
         Log.d("testt", "Listen done indexid : "+userIndexId);
 
+        mVibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
         emailView = findViewById(R.id.email_id);
         emailView.setText("ID : " + userId);
 
@@ -419,9 +423,11 @@ public class ListenDoneActivity extends AppCompatActivity {
                 double distanceY = Math.abs(e1.getY() - e2.getY());
 
                 if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE) {
+                    mVibe.vibrate(400);
                     texttospeechs();
                 } // up to down swipe
                 else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE) {
+                    mVibe.vibrate(400);
                     Intent intent = new Intent(ListenDoneActivity.this, QuestionActivity.class);
                     intent.putExtra("USERID",userId);
                     intent.putExtra("USERINDEX", userIndexId);

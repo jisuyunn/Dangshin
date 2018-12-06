@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
@@ -42,6 +43,7 @@ public class CustomCameraActivity extends Activity {
 
     private TextToSpeech tts;
     private String utteranceId;
+    public Vibrator mVibe;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class CustomCameraActivity extends Activity {
 
         setContentView(R.layout.activity_custom_camera);
         texttospeechs();
+        mVibe = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
         preview = new CameraPreview(this, (SurfaceView)findViewById(R.id.surfaceView));
         preview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -225,6 +228,7 @@ public class CustomCameraActivity extends Activity {
 
             intent.putExtra("PATH",pictureFile );
             CustomCameraActivity.this.setResult(RESULT_OK, intent);
+            mVibe.vibrate(400);
             CustomCameraActivity.this.finish();
             return null;
         }
